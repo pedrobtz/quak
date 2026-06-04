@@ -1,0 +1,54 @@
+url: https://pedrobtz.github.io/quak/
+template:
+  bootstrap: 5
+
+reference:
+  - title: Connections and Azure credentials
+    contents:
+      - az_conn
+      - az_conn_settings
+      - az_default_scope
+      - az_list_secrets
+      - az_set_chain_secret
+      - az_set_sp_secret
+      - az_set_token_secret
+      - az_tune
+      - conn_setting
+  - title: Lazy tables and registered datasets
+    contents:
+      - tbl_delta
+      - tbl_parquet
+      - tbl_csv
+      - tbl_json
+      - collect.tbl_az
+      - load_dataset
+      - load_delta
+      - load_parquet
+      - load_csv
+      - load_json
+  - title: Azure lake operations
+    contents:
+      - az_copy_to
+      - az_write_parquet
+      - az_glob
+      - az_exists
+      - az_schema
+      - az_glimpse
+      - az_delta_files
+  - title: Extension repositories and cache
+    contents:
+      - ext_cache
+      - ext_cache_path
+      - ext_dir
+      - ext_install
+      - ext_install_local
+      - ext_is_installed
+      - ext_list_available
+      - ext_list_installed
+      - ext_load
+      - ext_set_dir
+      - ext_uninstall
+      - repo_set_urls
+      - repo_urls
+      - quak_options
+      - print.quak_opts
