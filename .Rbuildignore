@@ -17,3 +17,4 @@
 ^\.Rhistory$
 ^[.]?air[.]toml$
 ^\.vscode$
+^CRAN-SUBMISSION$
