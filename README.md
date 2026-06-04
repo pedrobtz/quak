@@ -3,7 +3,6 @@
 <!-- badges: start -->
 [![R-CMD-check](https://github.com/pedrobtz/quak/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/pedrobtz/quak/actions/workflows/R-CMD-check.yaml)
 [![coverage](https://raw.githubusercontent.com/pedrobtz/quak/main/.github/badges/coverage.svg)](https://github.com/pedrobtz/quak/actions/workflows/coverage.yaml)
-[![R-CMD-check](https://github.com/pedrobtz/quak/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/pedrobtz/quak/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
 `quak` provides convenient utilities for using DuckDB with datasets stored in
