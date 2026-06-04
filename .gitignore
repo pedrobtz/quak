@@ -1,0 +1,35 @@
+# R session and IDE state
+.Rproj.user/
+.Rhistory
+.RData
+.Ruserdata
+.Renviron
+.Renviron.local
+.Rprofile
+.httr-oauth
+.positai/
+
+# R build and check artifacts
+*.Rcheck/
+*.tar.gz
+Rplots.pdf
+Meta/
+doc/
+
+# Compiled package artifacts
+src/*.o
+src/*.so
+src/*.dll
+src/*.dylib
+src/*.a
+src/*.sl
+src/symbols.rds
+
+# testthat local artifacts
+tests/testthat/_snaps/
+tests/testthat/_problems/
+tests/testthat/testthat-problems.rds
+
+# OS/editor noise
+.DS_Store
+docs
