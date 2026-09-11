@@ -52,7 +52,7 @@ az_copy_to <- function(
     )
   }
 
-  check_azure_url(url)
+  url <- check_azure_url(url)
   ensure_azure_exts(conn, delta = FALSE)
 
   source <- tryCatch(
@@ -143,7 +143,7 @@ az_glob <- function(conn, pattern) {
       value = pattern
     )
   }
-  check_azure_url(pattern)
+  pattern <- check_azure_url(pattern)
   ensure_azure_exts(conn, delta = FALSE)
   rows <- az_query(
     conn,
@@ -180,7 +180,7 @@ az_exists <- function(conn, url) {
       value = url
     )
   }
-  check_azure_url(url)
+  url <- check_azure_url(url)
   ensure_azure_exts(conn, delta = FALSE)
 
   if (has_glob_pattern(url)) {
@@ -219,7 +219,7 @@ az_schema <- function(conn, url, format = NULL) {
       value = url
     )
   }
-  check_azure_url(url)
+  url <- check_azure_url(url)
   format <- az_resolve_format(url, format)
   ensure_azure_exts(conn, delta = format == "delta")
 
@@ -271,7 +271,7 @@ az_glimpse <- function(conn, url, n = 10, format = NULL) {
       value = n
     )
   }
-  check_azure_url(url)
+  url <- check_azure_url(url)
   format <- az_resolve_format(url, format)
   ensure_azure_exts(conn, delta = format == "delta")
 
@@ -392,6 +392,16 @@ az_copy_source_sql <- function(conn, x) {
   }
   if (inherits(x, "tbl_sql") || inherits(x, "tbl_lazy")) {
     rlang::check_installed("dbplyr")
+    if (!identical(dbplyr::remote_con(x), conn)) {
+      abort_bad_arg(
+        c(
+          "{.arg x} is a lazy table from a different connection than {.arg conn}.",
+          "i" = "Pass a table built on {.arg conn}, or materialise it first with {.fn dplyr::collect}."
+        ),
+        arg = "x",
+        value = x
+      )
+    }
     return(list(sql = as.character(dbplyr::sql_render(x)), cleanup = NULL))
   }
 

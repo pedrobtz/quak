@@ -105,6 +105,11 @@ test_that("tbl_delta validates time travel arguments before touching the network
     class = "quak_error_bad_argument"
   )
   expect_error(
+    tbl_delta(conn, "abfss://a/b", name = "t", timestamp = "2024-01-01"),
+    "not supported",
+    class = "quak_error_bad_argument"
+  )
+  expect_error(
     tbl_delta(conn, "abfss://a/b", version = 1),
     "name",
     class = "quak_error_bad_argument"
