@@ -27,8 +27,9 @@ load_delta(
 
 \item{version}{Optional non-negative Delta table version to attach.}
 
-\item{timestamp}{Optional Delta table timestamp to attach. Only one of
-\code{version} and \code{timestamp} may be supplied.}
+\item{timestamp}{Deprecated. Not supported: DuckDB's \code{delta} extension
+accepts a \code{TIMESTAMP} attach option but ignores it, returning the latest
+snapshot. Supplying it raises an error. Use \code{version} instead.}
 }
 \value{
 Invisibly returns \code{conn}.
