@@ -26,20 +26,28 @@ with columns: `name`, `version`, `description`.
 
 ``` r
 conn <- DBI::dbConnect(duckdb::duckdb())
+#> duckdb keeps downloaded extensions and secrets in a temporary directory:
+#> ℹ /tmp/Rtmpfq6aqc/duckdb
+#> This is removed when the R session ends.
+#> • Extensions are re-downloaded each session.
+#> • Secrets are lost.
+#> ℹ Run duckdb(shared_home = TRUE) (or create ~/.duckdb) to keep them (suitable for most users).
+#> ℹ Run duckdb(shared_home = FALSE) to accept the temporary directory (and silence this message).
+#> ℹ See ?duckdb_storage for details and alternatives.
 ext_list_available(conn)
-#> # A tibble: 28 × 3
+#> # A tibble: 30 × 3
 #>    name           version description                                           
 #>    <chr>          <chr>   <chr>                                                 
 #>  1 autocomplete   ""      Adds support for autocomplete in the shell            
-#>  2 aws            ""      Provides features that depend on the AWS SDK          
-#>  3 azure          ""      Adds a filesystem abstraction for Azure blob storage …
-#>  4 core_functions ""      Core function library                                 
-#>  5 delta          ""      Adds support for Delta Lake                           
-#>  6 ducklake       ""      Adds support for DuckLake, SQL as a Lakehouse Format  
-#>  7 encodings      ""      All unicode encodings to UTF-8                        
-#>  8 excel          ""      Adds support for Excel-like format strings            
-#>  9 fts            ""      Adds support for Full-Text Search Indexes             
-#> 10 httpfs         ""      Adds support for reading and writing files over a HTT…
-#> # ℹ 18 more rows
+#>  2 avro           ""      Adds support for reading Avro files                   
+#>  3 aws            ""      Provides features that depend on the AWS SDK          
+#>  4 azure          ""      Adds a filesystem abstraction for Azure blob storage …
+#>  5 core_functions ""      Core function library                                 
+#>  6 delta          ""      Adds support for Delta Lake                           
+#>  7 ducklake       ""      Adds support for DuckLake, SQL as a Lakehouse Format  
+#>  8 encodings      ""      All unicode encodings to UTF-8                        
+#>  9 excel          ""      Adds support for Excel-like format strings            
+#> 10 fts            ""      Adds support for Full-Text Search Indexes             
+#> # ℹ 20 more rows
 DBI::dbDisconnect(conn, shutdown = TRUE)
 ```

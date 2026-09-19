@@ -35,7 +35,7 @@ resets that connection setting to DuckDB's default."></head><body>
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>Set DuckDB extension repository URLs</h1>
-      <small class="dont-index">Source: <a href="https://github.com/pedrobtz/quak/blob/main/R/repositories.R" class="external-link"><code>R/repositories.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/pedrobtz/quak/blob/0.1.0/R/repositories.R" class="external-link"><code>R/repositories.R</code></a></small>
       <div class="d-none name"><code>repo_set_urls.Rd</code></div>
     </div>
 
@@ -94,6 +94,14 @@ reflecting the current option values.</p>
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">old</span> <span class="op">&lt;-</span> <span class="fu"><a href="repo_urls.html">repo_urls</a></span><span class="op">(</span><span class="op">)</span></span></span>
 <span class="r-in"><span><span class="fu">repo_set_urls</span><span class="op">(</span>core <span class="op">=</span> <span class="st">"https://extensions.example.com"</span>, check <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> duckdb keeps downloaded extensions and secrets in a temporary directory:</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #0000BB;">ℹ</span> /tmp/Rtmpfq6aqc/duckdb</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> This is removed when the R session ends.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">•</span> Extensions are re-downloaded each session.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">•</span> Secrets are lost.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #0000BB;">ℹ</span> Run duckdb(shared_home = TRUE) (or create ~/.duckdb) to keep them (suitable for most users).</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #0000BB;">ℹ</span> Run duckdb(shared_home = FALSE) to accept the temporary directory (and silence this message).</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #0000BB;">ℹ</span> See ?duckdb_storage for details and alternatives.</span>
 <span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BB00;">✔</span> Set `custom_extension_repository` = <span style="color: #0000BB;">"https://extensions.example.com"</span></span>
 <span class="r-in"><span><span class="fu"><a href="repo_urls.html">repo_urls</a></span><span class="op">(</span><span class="op">)</span></span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> $core</span>
@@ -115,7 +123,7 @@ reflecting the current option values.</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.1.</p>
 </div>
 
     </footer></div>

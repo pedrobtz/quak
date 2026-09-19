@@ -31,7 +31,7 @@ regardless of whether they are installed."></head><body>
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>List all DuckDB core extensions</h1>
-      <small class="dont-index">Source: <a href="https://github.com/pedrobtz/quak/blob/main/R/extensions.R" class="external-link"><code>R/extensions.R</code></a></small>
+      <small class="dont-index">Source: <a href="https://github.com/pedrobtz/quak/blob/0.1.0/R/extensions.R" class="external-link"><code>R/extensions.R</code></a></small>
       <div class="d-none name"><code>ext_list_available.Rd</code></div>
     </div>
 
@@ -61,21 +61,29 @@ regardless of whether they are installed.</p>
     <div class="section level2">
     <h2 id="ref-examples">Examples<a class="anchor" aria-label="anchor" href="#ref-examples"></a></h2>
     <div class="sourceCode"><pre class="sourceCode r"><code><span class="r-in"><span><span class="va">conn</span> <span class="op">&lt;-</span> <span class="fu">DBI</span><span class="fu">::</span><span class="fu"><a href="https://dbi.r-dbi.org/reference/dbConnect.html" class="external-link">dbConnect</a></span><span class="op">(</span><span class="fu">duckdb</span><span class="fu">::</span><span class="fu"><a href="https://r.duckdb.org/reference/duckdb.html" class="external-link">duckdb</a></span><span class="op">(</span><span class="op">)</span><span class="op">)</span></span></span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> duckdb keeps downloaded extensions and secrets in a temporary directory:</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #0000BB;">ℹ</span> /tmp/Rtmpfq6aqc/duckdb</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> This is removed when the R session ends.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">•</span> Extensions are re-downloaded each session.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #00BBBB;">•</span> Secrets are lost.</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #0000BB;">ℹ</span> Run duckdb(shared_home = TRUE) (or create ~/.duckdb) to keep them (suitable for most users).</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #0000BB;">ℹ</span> Run duckdb(shared_home = FALSE) to accept the temporary directory (and silence this message).</span>
+<span class="r-msg co"><span class="r-pr">#&gt;</span> <span style="color: #0000BB;">ℹ</span> See ?duckdb_storage for details and alternatives.</span>
 <span class="r-in"><span><span class="fu">ext_list_available</span><span class="op">(</span><span class="va">conn</span><span class="op">)</span></span></span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 28 × 3</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># A tibble: 30 × 3</span></span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    name           version description                                           </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>    <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>          <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>   <span style="color: #949494; font-style: italic;">&lt;chr&gt;</span>                                                 </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 1</span> autocomplete   <span style="color: #949494;">""</span>      Adds support for autocomplete in the shell            </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 2</span> aws            <span style="color: #949494;">""</span>      Provides features that depend on the AWS SDK          </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 3</span> azure          <span style="color: #949494;">""</span>      Adds a filesystem abstraction for Azure blob storage …</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 4</span> core_functions <span style="color: #949494;">""</span>      Core function library                                 </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 5</span> delta          <span style="color: #949494;">""</span>      Adds support for Delta Lake                           </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 6</span> ducklake       <span style="color: #949494;">""</span>      Adds support for DuckLake, SQL as a Lakehouse Format  </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 7</span> encodings      <span style="color: #949494;">""</span>      All unicode encodings to UTF-8                        </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span> excel          <span style="color: #949494;">""</span>      Adds support for Excel-like format strings            </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span> fts            <span style="color: #949494;">""</span>      Adds support for Full-Text Search Indexes             </span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span> httpfs         <span style="color: #949494;">""</span>      Adds support for reading and writing files over a HTT…</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 18 more rows</span></span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 2</span> avro           <span style="color: #949494;">""</span>      Adds support for reading Avro files                   </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 3</span> aws            <span style="color: #949494;">""</span>      Provides features that depend on the AWS SDK          </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 4</span> azure          <span style="color: #949494;">""</span>      Adds a filesystem abstraction for Azure blob storage …</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 5</span> core_functions <span style="color: #949494;">""</span>      Core function library                                 </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 6</span> delta          <span style="color: #949494;">""</span>      Adds support for Delta Lake                           </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 7</span> ducklake       <span style="color: #949494;">""</span>      Adds support for DuckLake, SQL as a Lakehouse Format  </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 8</span> encodings      <span style="color: #949494;">""</span>      All unicode encodings to UTF-8                        </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;"> 9</span> excel          <span style="color: #949494;">""</span>      Adds support for Excel-like format strings            </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #BCBCBC;">10</span> fts            <span style="color: #949494;">""</span>      Adds support for Full-Text Search Indexes             </span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> <span style="color: #949494;"># ℹ 20 more rows</span></span>
 <span class="r-in"><span><span class="fu">DBI</span><span class="fu">::</span><span class="fu"><a href="https://dbi.r-dbi.org/reference/dbDisconnect.html" class="external-link">dbDisconnect</a></span><span class="op">(</span><span class="va">conn</span>, shutdown <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></span>
 </code></pre></div>
     </div>
@@ -88,7 +96,7 @@ regardless of whether they are installed.</p>
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.2.1.</p>
 </div>
 
     </footer></div>
