@@ -1,6 +1,7 @@
 # quak
 
 <!-- badges: start -->
+[![PackageVersion](https://www.r-pkg.org/badges/version/quak)](https://www.r-pkg.org/pkg/quak)
 [![R-CMD-check](https://github.com/pedrobtz/quak/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/pedrobtz/quak/actions/workflows/R-CMD-check.yaml)
 [![coverage](https://raw.githubusercontent.com/pedrobtz/quak/main/.github/badges/coverage.svg)](https://github.com/pedrobtz/quak/actions/workflows/coverage.yaml)
 <!-- badges: end -->
