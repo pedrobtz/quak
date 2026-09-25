@@ -25,6 +25,8 @@ reference:
       - tbl_csv
       - tbl_json
       - collect.tbl_az
+      - collect_arrow
+      - stream_arrow
       - load_dataset
       - load_delta
       - load_parquet

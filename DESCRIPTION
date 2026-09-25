@@ -11,7 +11,7 @@ Description: Provides convenience utilities for using 'DuckDB' directly over
     supports optional repository mirrors for restricted networks. Integrates
     well with 'DBI' for SQL workflows and with 'dplyr' and 'dbplyr' for lazy
     table queries.
-URL: https://github.com/pedrobtz/quak
+URL: https://pedrobtz.github.io/quak, https://github.com/pedrobtz/quak
 BugReports: https://github.com/pedrobtz/quak/issues
 License: MIT + file LICENSE
 Encoding: UTF-8
@@ -21,7 +21,7 @@ Imports:
     cli,
     curl,
     DBI,
-    duckdb,
+    duckdb (>= 1.5.4),
     fs,
     glue,
     rlang,
@@ -31,10 +31,12 @@ Suggests:
     azr (>= 0.3.4),
     dbplyr,
     dplyr,
+    nanoarrow,
     testthat (>= 3.0.0),
     tibble,
     withr
 Config/testthat/edition: 3
+Config/Needs/website: rmarkdown
 Collate:
     'options.R'
     'conditions.R'
@@ -45,6 +47,7 @@ Collate:
     'azure.R'
     'datasets.R'
     'tables.R'
+    'arrow.R'
     'lake.R'
     'delta.R'
     'quak-package.R'
