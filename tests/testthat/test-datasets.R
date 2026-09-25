@@ -1,8 +1,50 @@
 # check_azure_url -------------------------------------------------------------
 
 test_that("check_azure_url accepts abfss and abfs URLs", {
-  expect_null(check_azure_url("abfss://container@acct.dfs.core.windows.net/p"))
-  expect_null(check_azure_url("abfs://container@acct/p"))
+  expect_equal(
+    check_azure_url("abfss://acct.dfs.core.windows.net/container/p"),
+    "abfss://acct.dfs.core.windows.net/container/p"
+  )
+  expect_equal(
+    check_azure_url("abfss://container/p"),
+    "abfss://container/p"
+  )
+})
+
+test_that("check_azure_url normalises the container@account form", {
+  # DuckDB documents abfss://account.dfs.core.windows.net/container/path, and
+  # only that form can be matched by an account-scoped secret.
+  expect_equal(
+    check_azure_url("abfss://container@acct.dfs.core.windows.net/p"),
+    "abfss://acct.dfs.core.windows.net/container/p"
+  )
+  expect_equal(
+    check_azure_url("abfs://container@acct/p"),
+    "abfs://acct.dfs.core.windows.net/container/p"
+  )
+})
+
+test_that("normalize_azure_url leaves documented forms untouched", {
+  unchanged <- c(
+    "abfss://acct.dfs.core.windows.net/container/data/*.parquet",
+    "abfss://container/data/sales",
+    "abfs://container/data"
+  )
+  for (url in unchanged) {
+    expect_equal(normalize_azure_url(url), url)
+  }
+})
+
+test_that("normalize_azure_url preserves globs and handles a bare prefix", {
+  expect_equal(
+    normalize_azure_url("abfss://c@acct/data/**/*.parquet"),
+    "abfss://acct.dfs.core.windows.net/c/data/**/*.parquet"
+  )
+  # No trailing path at all.
+  expect_equal(
+    normalize_azure_url("abfss://c@acct"),
+    "abfss://acct.dfs.core.windows.net/c"
+  )
 })
 
 test_that("check_azure_url rejects non-Azure URLs", {
@@ -151,16 +193,17 @@ test_that("delta SQL builders embed the scan, URL, and clauses", {
     as.character(sql_delta_attach(url, "tbl", TRUE, conn, version = 2)),
     "VERSION 2"
   )
-  expect_match(
-    as.character(sql_delta_attach(
-      url,
-      "tbl",
-      TRUE,
-      conn,
-      timestamp = "2024-01-01"
-    )),
-    "TIMESTAMP '2024-01-01'"
+  # DuckDB's delta extension accepts a TIMESTAMP attach option and ignores it,
+  # so quak refuses it rather than returning the latest snapshot silently.
+  expect_error(
+    sql_delta_attach(url, "tbl", TRUE, conn, timestamp = "2024-01-01"),
+    "not supported",
+    class = "quak_error_bad_argument"
   )
+  expect_false(grepl(
+    "TIMESTAMP",
+    as.character(sql_delta_attach(url, "tbl", TRUE, conn, version = 2))
+  ))
   expect_error(
     sql_delta_attach(url, "tbl", TRUE, conn, version = 1, timestamp = "x"),
     "Only one",
@@ -208,5 +251,50 @@ test_that("CSV and JSON SQL builders embed reader options", {
       list(header = TRUE)
     )),
     "CREATE OR REPLACE VIEW"
+  )
+})
+
+# load_dataset reader-option forwarding ---------------------------------------
+
+test_that("load_dataset forwards reader options to loaders taking `...`", {
+  # Regression: the explicit-formals allowlist used to reject every CSV/JSON
+  # reader option, making load_dataset() less capable than the loaders it wraps.
+  called <- NULL
+  local_mocked_bindings(
+    load_csv = function(conn, url, name, ...) {
+      called <<- list(...)
+      invisible(conn)
+    }
+  )
+  load_dataset(NULL, "abfss://a/b.csv", "t", format = "csv", header = TRUE)
+  expect_equal(called, list(header = TRUE))
+})
+
+test_that("load_dataset still rejects bad arguments for loaders without `...`", {
+  expect_error(
+    load_dataset(NULL, "abfss://a/b", "t", format = "delta", bogus = TRUE),
+    "not accepted",
+    class = "quak_error_bad_argument"
+  )
+  expect_error(
+    load_dataset(NULL, "abfss://a/b", "t", format = "parquet", header = TRUE),
+    "not accepted",
+    class = "quak_error_bad_argument"
+  )
+})
+
+test_that("load_dataset leaves reader-option validation to the loader", {
+  # Forwarding does not weaken validation: load_csv() still rejects option
+  # names that cannot be a DuckDB reader option, before any remote work.
+  expect_error(
+    load_dataset(
+      NULL,
+      "abfss://a/b.csv",
+      "t",
+      format = "csv",
+      `bad name` = 1
+    ),
+    "invalid reader option",
+    class = "quak_error_bad_argument"
   )
 })

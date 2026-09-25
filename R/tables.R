@@ -10,7 +10,7 @@
 #' VIEW depending on `method`), then referenced by name.
 #'
 #' Delta time travel currently requires `name` because DuckDB exposes
-#' `version` and `timestamp` through `ATTACH`, not `delta_scan()`.
+#' `version` through `ATTACH`, not `delta_scan()`.
 #'
 #' @param conn A DuckDB connection.
 #' @param url Character scalar. Azure Blob URL pointing to a Delta table
@@ -21,8 +21,9 @@
 #' @param replace Logical. Replace an existing registration of the same name.
 #'   Default `TRUE`. Ignored when `name = NULL`.
 #' @param version Optional non-negative Delta table version to read.
-#' @param timestamp Optional Delta table timestamp to read. Only one of
-#'   `version` and `timestamp` may be supplied.
+#' @param timestamp Deprecated. Not supported: DuckDB's `delta` extension
+#'   accepts a `TIMESTAMP` attach option but ignores it, returning the latest
+#'   snapshot. Supplying it raises an error. Use `version` instead.
 #' @return A [dplyr::tbl()] backed by the Delta table.
 #' @examples
 #' \dontrun{
@@ -60,16 +61,16 @@ tbl_delta <- function(
     )
   }
   check_delta_time_travel(version, timestamp)
-  if (is.null(name) && (!is.null(version) || !is.null(timestamp))) {
+  if (is.null(name) && !is.null(version)) {
     abort_bad_arg(
-      "{.arg name} is required when using {.arg version} or {.arg timestamp}.",
+      "{.arg name} is required when using {.arg version}.",
       arg = "name",
       value = name
     )
   }
   method <- rlang::arg_match(method)
   out <- if (is.null(name)) {
-    check_azure_url(url)
+    url <- check_azure_url(url)
     ensure_azure_exts(conn, delta = TRUE)
     dplyr::tbl(conn, dplyr::sql(sql_delta_scan(url, conn)))
   } else {
@@ -150,7 +151,7 @@ tbl_parquet <- function(
     )
   }
   out <- if (is.null(name)) {
-    check_azure_url(url)
+    url <- check_azure_url(url)
     ensure_azure_exts(conn, delta = FALSE)
     dplyr::tbl(conn, dplyr::sql(sql_parquet_scan(url, hive_partitioning, conn)))
   } else {
@@ -220,7 +221,7 @@ tbl_csv <- function(
   options <- list(...)
   check_reader_options(options)
   out <- if (is.null(name)) {
-    check_azure_url(url)
+    url <- check_azure_url(url)
     ensure_azure_exts(conn, delta = FALSE)
     dplyr::tbl(conn, dplyr::sql(sql_csv_scan(url, conn, options)))
   } else {
@@ -284,7 +285,7 @@ tbl_json <- function(
   options <- list(...)
   check_reader_options(options)
   out <- if (is.null(name)) {
-    check_azure_url(url)
+    url <- check_azure_url(url)
     ext_load("json", conn = conn, auto_install = TRUE, ask = FALSE)
     ensure_azure_exts(conn, delta = FALSE)
     dplyr::tbl(conn, dplyr::sql(sql_json_scan(url, conn, options)))

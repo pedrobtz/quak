@@ -2,7 +2,7 @@
 % Please edit documentation in R/datasets.R
 \name{check_azure_url}
 \alias{check_azure_url}
-\title{Validate that a URL is an Azure Data Lake URL}
+\title{Validate and normalise an Azure Data Lake URL}
 \usage{
 check_azure_url(url)
 }
@@ -10,10 +10,11 @@ check_azure_url(url)
 \item{url}{Character scalar. URL to validate.}
 }
 \value{
-Invisibly returns \code{NULL}; called for its side effect of aborting
-when \code{url} is not an \verb{abfss://} URL.
+The normalised URL.
 }
 \description{
-Validate that a URL is an Azure Data Lake URL
+Aborts when \code{url} is not an \verb{abfss://} URL, then rewrites the
+\code{container@account} authority form to the account-host form DuckDB
+documents. Always use the returned value rather than the input.
 }
 \keyword{internal}

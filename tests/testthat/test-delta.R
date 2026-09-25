@@ -20,7 +20,7 @@ test_that("az_delta_files rejects non-Azure URLs before I/O", {
 test_that("az_delta_files wraps DuckDB query failures", {
   conn <- local_ext_conn()
   local_mocked_bindings(
-    check_azure_url = function(url) invisible(NULL),
+    check_azure_url = function(url) url,
     ensure_azure_exts = function(conn, delta = FALSE) invisible(NULL),
     sql_delta_files = function(...) DBI::SQL("SELECT * FROM missing_table")
   )

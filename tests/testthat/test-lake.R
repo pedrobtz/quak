@@ -2,7 +2,7 @@ test_that("az_write_parquet writes data frames with DuckDB COPY", {
   conn <- local_ext_conn()
   path <- file.path(withr::local_tempdir(), "out.parquet")
   local_mocked_bindings(
-    check_azure_url = function(url) invisible(NULL),
+    check_azure_url = function(url) url,
     ensure_azure_exts = function(conn, delta = FALSE) invisible(NULL)
   )
 
@@ -19,7 +19,7 @@ test_that("az_copy_to accepts SQL strings and COPY options", {
   conn <- local_ext_conn()
   path <- file.path(withr::local_tempdir(), "out.csv")
   local_mocked_bindings(
-    check_azure_url = function(url) invisible(NULL),
+    check_azure_url = function(url) url,
     ensure_azure_exts = function(conn, delta = FALSE) invisible(NULL)
   )
 
@@ -32,7 +32,7 @@ test_that("az_copy_to accepts SQL strings and COPY options", {
 test_that("az_copy_to wraps COPY failures", {
   conn <- local_ext_conn()
   local_mocked_bindings(
-    check_azure_url = function(url) invisible(NULL),
+    check_azure_url = function(url) url,
     ensure_azure_exts = function(conn, delta = FALSE) invisible(NULL)
   )
 
@@ -46,7 +46,7 @@ test_that("az_copy_to wraps COPY failures", {
 test_that("az_copy_to wraps source preparation failures", {
   conn <- local_ext_conn()
   local_mocked_bindings(
-    check_azure_url = function(url) invisible(NULL),
+    check_azure_url = function(url) url,
     ensure_azure_exts = function(conn, delta = FALSE) invisible(NULL),
     az_copy_source_sql = function(...) stop("stage failed")
   )
@@ -67,7 +67,7 @@ test_that("az_glob and az_exists use DuckDB glob semantics", {
   dir.create(file.path(dir, "dataset"))
   writeLines("a\n1", file.path(dir, "dataset", "x.csv"))
   local_mocked_bindings(
-    check_azure_url = function(url) invisible(NULL),
+    check_azure_url = function(url) url,
     ensure_azure_exts = function(conn, delta = FALSE) invisible(NULL)
   )
 
@@ -82,7 +82,7 @@ test_that("az_glob and az_exists use DuckDB glob semantics", {
 test_that("az_glob and az_exists wrap DuckDB query failures", {
   conn <- local_ext_conn()
   local_mocked_bindings(
-    check_azure_url = function(url) invisible(NULL),
+    check_azure_url = function(url) url,
     ensure_azure_exts = function(conn, delta = FALSE) invisible(NULL),
     sql_glob = function(...) DBI::SQL("SELECT * FROM missing_table")
   )
@@ -103,7 +103,7 @@ test_that("az_schema infers formats and returns name/type columns", {
   path <- file.path(dir, "x.csv")
   writeLines("a,b\n1,x", path)
   local_mocked_bindings(
-    check_azure_url = function(url) invisible(NULL),
+    check_azure_url = function(url) url,
     ensure_azure_exts = function(conn, delta = FALSE) invisible(NULL)
   )
 
@@ -116,7 +116,7 @@ test_that("az_schema infers formats and returns name/type columns", {
 test_that("az_schema wraps DuckDB query failures", {
   conn <- local_ext_conn()
   local_mocked_bindings(
-    check_azure_url = function(url) invisible(NULL),
+    check_azure_url = function(url) url,
     ensure_azure_exts = function(conn, delta = FALSE) invisible(NULL),
     sql_schema_query = function(...) DBI::SQL("SELECT * FROM missing_table")
   )
@@ -137,7 +137,7 @@ test_that("az_glimpse prints and invisibly returns the preview", {
   path <- file.path(dir, "x.csv")
   writeLines("a,b\n1,x\n2,y", path)
   local_mocked_bindings(
-    check_azure_url = function(url) invisible(NULL),
+    check_azure_url = function(url) url,
     ensure_azure_exts = function(conn, delta = FALSE) invisible(NULL)
   )
 
@@ -149,7 +149,7 @@ test_that("az_glimpse prints and invisibly returns the preview", {
 test_that("az_glimpse wraps DuckDB query failures", {
   conn <- local_ext_conn()
   local_mocked_bindings(
-    check_azure_url = function(url) invisible(NULL),
+    check_azure_url = function(url) url,
     ensure_azure_exts = function(conn, delta = FALSE) invisible(NULL),
     sql_preview_query = function(...) DBI::SQL("SELECT * FROM missing_table")
   )
@@ -191,4 +191,35 @@ test_that("az_resolve_format infers common lake formats", {
     "Cannot infer",
     class = "quak_error_bad_argument"
   )
+})
+
+# az_copy_source_sql connection safety ----------------------------------------
+
+test_that("az_copy_source_sql rejects a lazy table from another connection", {
+  skip_if_not_installed("dplyr")
+  skip_if_not_installed("dbplyr")
+  source_conn <- local_ext_conn()
+  export_conn <- local_ext_conn()
+  # Same name on both connections, different rows: rendering the lazy table's
+  # SQL against export_conn would silently export the wrong data.
+  DBI::dbWriteTable(source_conn, "sales", data.frame(amount = 1))
+  DBI::dbWriteTable(export_conn, "sales", data.frame(amount = 999))
+
+  expect_error(
+    az_copy_source_sql(export_conn, dplyr::tbl(source_conn, "sales")),
+    "different connection",
+    class = "quak_error_bad_argument"
+  )
+})
+
+test_that("az_copy_source_sql accepts a lazy table from the same connection", {
+  skip_if_not_installed("dplyr")
+  skip_if_not_installed("dbplyr")
+  conn <- local_ext_conn()
+  DBI::dbWriteTable(conn, "sales", data.frame(amount = 1))
+
+  prepared <- az_copy_source_sql(conn, dplyr::tbl(conn, "sales"))
+
+  expect_null(prepared$cleanup)
+  expect_equal(DBI::dbGetQuery(conn, prepared$sql)$amount, 1)
 })

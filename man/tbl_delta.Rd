@@ -30,8 +30,9 @@ Default \code{TRUE}. Ignored when \code{name = NULL}.}
 
 \item{version}{Optional non-negative Delta table version to read.}
 
-\item{timestamp}{Optional Delta table timestamp to read. Only one of
-\code{version} and \code{timestamp} may be supplied.}
+\item{timestamp}{Deprecated. Not supported: DuckDB's \code{delta} extension
+accepts a \code{TIMESTAMP} attach option but ignores it, returning the latest
+snapshot. Supplying it raises an error. Use \code{version} instead.}
 }
 \value{
 A \code{\link[dplyr:tbl]{dplyr::tbl()}} backed by the Delta table.
@@ -48,7 +49,7 @@ the table is first registered via \code{\link[=load_delta]{load_delta()}} (as an
 VIEW depending on \code{method}), then referenced by name.
 
 Delta time travel currently requires \code{name} because DuckDB exposes
-\code{version} and \code{timestamp} through \code{ATTACH}, not \code{delta_scan()}.
+\code{version} through \code{ATTACH}, not \code{delta_scan()}.
 }
 \examples{
 \dontrun{

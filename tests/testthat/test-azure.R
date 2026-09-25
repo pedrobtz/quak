@@ -151,3 +151,71 @@ test_that("az_set_chain_secret registers a scoped secret", {
   secrets <- DBI::dbGetQuery(conn, "SELECT name FROM duckdb_secrets()")
   expect_true("quak_myaccount" %in% secrets$name)
 })
+
+# Secret scopes ----------------------------------------------------------------
+
+test_that("az_account_scopes covers the documented account-host URL forms", {
+  expect_equal(
+    az_account_scopes("myaccount"),
+    c(
+      "abfss://myaccount.dfs.core.windows.net/",
+      "abfs://myaccount.dfs.core.windows.net/",
+      "az://myaccount.blob.core.windows.net/",
+      "azure://myaccount.blob.core.windows.net/"
+    )
+  )
+})
+
+test_that("az_account_scopes accepts an already-qualified host", {
+  expect_equal(
+    az_account_scopes("myaccount.dfs.core.windows.net"),
+    c(
+      "abfss://myaccount.dfs.core.windows.net/",
+      "abfs://myaccount.dfs.core.windows.net/",
+      "az://myaccount.dfs.core.windows.net/",
+      "azure://myaccount.dfs.core.windows.net/"
+    )
+  )
+})
+
+test_that("an account-scoped secret is selected for that account's URLs", {
+  # Regression: the scope used to be abfss://<account>/, which matched nothing.
+  # DuckDB matches scopes as raw string prefixes, so only an execution test
+  # against which_secret() can catch this.
+  skip_on_cran()
+  skip_on_os("windows")
+  skip_if_offline()
+  conn <- local_ext_conn()
+  ext_install("azure", conn = conn)
+  az_set_token_secret(conn, account = "myaccount", token = "fake-token")
+
+  matches <- function(url) {
+    nrow(DBI::dbGetQuery(
+      conn,
+      glue::glue_sql("SELECT * FROM which_secret({url}, 'azure')", .con = conn)
+    )) > 0L
+  }
+
+  expect_true(matches("abfss://myaccount.dfs.core.windows.net/c/f.parquet"))
+  expect_true(matches("az://myaccount.blob.core.windows.net/c/f.parquet"))
+  # quak normalises this form to the account-host form before querying.
+  expect_true(matches(
+    check_azure_url("abfss://c@myaccount/f.parquet")
+  ))
+})
+
+test_that("an account-scoped secret is not selected for another account", {
+  skip_on_cran()
+  skip_on_os("windows")
+  skip_if_offline()
+  conn <- local_ext_conn()
+  ext_install("azure", conn = conn)
+  az_set_token_secret(conn, account = "myaccount", token = "fake-token")
+
+  found <- DBI::dbGetQuery(
+    conn,
+    "SELECT * FROM which_secret(
+       'abfss://otheraccount.dfs.core.windows.net/c/f.parquet', 'azure')"
+  )
+  expect_equal(nrow(found), 0L)
+})
