@@ -15,8 +15,9 @@ extension repositories.
 
 quak does not obtain Azure tokens. Credentials come from DuckDB's own
 credential chain, a service principal, or a token that the caller gets
-elsewhere, for example from `azr` (Suggests only). `dplyr` and `dbplyr` are
-also Suggests. Guard every use with `rlang::check_installed()`.
+elsewhere, for example from `azr` (Suggests only). `dplyr`, `dbplyr` and
+`nanoarrow` are also Suggests. Guard every use with
+`rlang::check_installed()`.
 
 There is no design or roadmap document. `README.md` is the user-facing tour.
 
@@ -77,7 +78,8 @@ The code is organised in layers. Each layer calls only the layers below it:
 6. [R/datasets.R](R/datasets.R) registers data (`load_*()`). It also holds the
    shared SQL builders (`sql_*_scan()`, `sql_reader_options()`) and
    `ensure_azure_exts()`. [R/tables.R](R/tables.R) wraps the same scans as
-   `tbl_az` lazy tables. [R/lake.R](R/lake.R) inspects and writes files on
+   `tbl_az` lazy tables, and [R/arrow.R](R/arrow.R) collects them as Arrow
+   data. [R/lake.R](R/lake.R) inspects and writes files on
    the lake. [R/delta.R](R/delta.R) lists Delta files.
 
 Many functions default to `conn = conn_default()`, which is
@@ -149,6 +151,10 @@ export.
 
 - Roxygen comments are the source. Never edit `man/` or `NAMESPACE` by
   hand. `README.md` is edited directly because there is no `README.Rmd`.
+- Long-form docs are pkgdown articles in `vignettes/articles/`, not
+  vignettes. `.Rbuildignore` excludes `vignettes/`, so they never reach
+  CRAN, and their dependencies go in `Config/Needs/website`, not Suggests.
+  Their code chunks use `eval = FALSE` because they need Azure.
 - Examples that reach Azure go in `\dontrun{}` with the comment
   `# Requires a live Azure account, credentials, and network access.`
 - Use `lower_snake_case`. `.lintr` allows lines up to 120 characters.

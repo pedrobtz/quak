@@ -7,7 +7,8 @@
 \method{collect}{tbl_az}(x, ...)
 }
 \arguments{
-\item{x}{A \code{tbl_az} produced by \code{\link[=tbl_delta]{tbl_delta()}} or \code{\link[=tbl_parquet]{tbl_parquet()}}.}
+\item{x}{A \code{tbl_az} produced by \code{\link[=tbl_delta]{tbl_delta()}}, \code{\link[=tbl_parquet]{tbl_parquet()}},
+\code{\link[=tbl_csv]{tbl_csv()}} or \code{\link[=tbl_json]{tbl_json()}}.}
 
 \item{...}{Passed on to the next \code{collect()} method.}
 }
@@ -15,10 +16,11 @@
 A \code{\link[tibble:tibble]{tibble::tibble()}} with the collected rows.
 }
 \description{
-\code{\link[dplyr:compute]{dplyr::collect()}} method for tables created by \code{\link[=tbl_delta]{tbl_delta()}} and
-\code{\link[=tbl_parquet]{tbl_parquet()}}. Verifies that the backing DuckDB connection is still open
-and that the \code{azure} extension is loaded before the query is materialised,
-then defers to the underlying dbplyr method.
+\code{\link[dplyr:compute]{dplyr::collect()}} method for tables created by \code{\link[=tbl_delta]{tbl_delta()}},
+\code{\link[=tbl_parquet]{tbl_parquet()}}, \code{\link[=tbl_csv]{tbl_csv()}} and \code{\link[=tbl_json]{tbl_json()}}. Verifies that the backing
+DuckDB connection is still open and that the \code{azure} extension is loaded
+before the query is materialised, then defers to the underlying dbplyr
+method.
 }
 \examples{
 \dontrun{
@@ -27,4 +29,8 @@ conn <- az_conn()
 tbl_delta(conn, "abfss://container@account/path/sales") |>
   dplyr::collect()
 }
+}
+\seealso{
+\code{\link[=collect_arrow]{collect_arrow()}} and \code{\link[=stream_arrow]{stream_arrow()}} to get the result as
+Arrow data instead.
 }

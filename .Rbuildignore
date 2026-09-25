@@ -18,3 +18,5 @@
 ^[.]?air[.]toml$
 ^\.vscode$
 ^CRAN-SUBMISSION$
+^CLAUDE\.md$
+^vignettes$
