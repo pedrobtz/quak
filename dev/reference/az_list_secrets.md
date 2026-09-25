@@ -28,7 +28,7 @@ with the columns returned by `duckdb_secrets()`.
 ``` r
 conn <- DBI::dbConnect(duckdb::duckdb())
 #> duckdb keeps downloaded extensions and secrets in a temporary directory:
-#> ℹ /tmp/RtmpP07olR/duckdb
+#> ℹ /tmp/RtmpDY9XQw/duckdb
 #> This is removed when the R session ends.
 #> • Extensions are re-downloaded each session.
 #> • Secrets are lost.
