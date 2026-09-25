@@ -1,4 +1,8 @@
 url: https://pedrobtz.github.io/quak/
+
+development:
+  mode: auto
+
 template:
   bootstrap: 5
 
