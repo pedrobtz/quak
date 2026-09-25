@@ -33,6 +33,10 @@
   : Open a JSON dataset as a lazy dplyr tbl
 - [`collect(`*`<tbl_az>`*`)`](https://pedrobtz.github.io/quak/dev/reference/collect.tbl_az.md)
   : Collect an Azure-backed lazy tbl
+- [`collect_arrow()`](https://pedrobtz.github.io/quak/dev/reference/collect_arrow.md)
+  : Collect an Azure-backed lazy tbl as Arrow data
+- [`stream_arrow()`](https://pedrobtz.github.io/quak/dev/reference/stream_arrow.md)
+  : Stream an Azure-backed lazy tbl as Arrow record batches
 - [`load_dataset()`](https://pedrobtz.github.io/quak/dev/reference/load_dataset.md)
   : Register a Delta, Parquet, CSV, or JSON dataset on a DuckDB
   connection

@@ -33,6 +33,13 @@
     <div id="navbar" class="collapse navbar-collapse ms-3">
       <ul class="navbar-nav me-auto">
 <li class="nav-item"><a class="nav-link" href="reference/index.html">Reference</a></li>
+<li class="nav-item dropdown">
+  <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
+  <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
+<li><a class="dropdown-item" href="articles/arrow.html">Arrow output</a></li>
+    <li><a class="dropdown-item" href="articles/duckdb-settings.html">DuckDB connection settings</a></li>
+  </ul>
+</li>
 <li class="nav-item"><a class="nav-link" href="news/index.html">Changelog</a></li>
       </ul>
 <ul class="navbar-nav">
@@ -69,7 +76,7 @@
 </h2>
 <p>Start by opening an Azure-ready DuckDB connection. <code><a href="reference/az_conn.html">az_conn()</a></code> installs and loads the <code>azure</code> and <code>delta</code> extensions but registers no credentials, so follow it with one of the secret helpers.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/pedrobtz/quak" class="external-link">quak</a></span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://pedrobtz.github.io/quak">quak</a></span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">conn</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/az_conn.html">az_conn</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <p>Use a credential chain when you want DuckDB to resolve credentials itself, for example from the Azure CLI:</p>

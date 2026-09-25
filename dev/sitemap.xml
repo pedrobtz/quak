@@ -2,6 +2,9 @@
 <url><loc>https://pedrobtz.github.io/quak/dev/CLAUDE.html</loc></url>
 <url><loc>https://pedrobtz.github.io/quak/dev/LICENSE-text.html</loc></url>
 <url><loc>https://pedrobtz.github.io/quak/dev/LICENSE.html</loc></url>
+<url><loc>https://pedrobtz.github.io/quak/dev/articles/arrow.html</loc></url>
+<url><loc>https://pedrobtz.github.io/quak/dev/articles/duckdb-settings.html</loc></url>
+<url><loc>https://pedrobtz.github.io/quak/dev/articles/index.html</loc></url>
 <url><loc>https://pedrobtz.github.io/quak/dev/authors.html</loc></url>
 <url><loc>https://pedrobtz.github.io/quak/dev/index.html</loc></url>
 <url><loc>https://pedrobtz.github.io/quak/dev/news/index.html</loc></url>
@@ -24,6 +27,7 @@
 <url><loc>https://pedrobtz.github.io/quak/dev/reference/check_azure_url.html</loc></url>
 <url><loc>https://pedrobtz.github.io/quak/dev/reference/check_tbl_az.html</loc></url>
 <url><loc>https://pedrobtz.github.io/quak/dev/reference/collect.tbl_az.html</loc></url>
+<url><loc>https://pedrobtz.github.io/quak/dev/reference/collect_arrow.html</loc></url>
 <url><loc>https://pedrobtz.github.io/quak/dev/reference/conn_default.html</loc></url>
 <url><loc>https://pedrobtz.github.io/quak/dev/reference/conn_driver.html</loc></url>
 <url><loc>https://pedrobtz.github.io/quak/dev/reference/conn_info.html</loc></url>
@@ -60,6 +64,7 @@
 <url><loc>https://pedrobtz.github.io/quak/dev/reference/repo_ext_url.html</loc></url>
 <url><loc>https://pedrobtz.github.io/quak/dev/reference/repo_set_urls.html</loc></url>
 <url><loc>https://pedrobtz.github.io/quak/dev/reference/repo_urls.html</loc></url>
+<url><loc>https://pedrobtz.github.io/quak/dev/reference/stream_arrow.html</loc></url>
 <url><loc>https://pedrobtz.github.io/quak/dev/reference/tbl_csv.html</loc></url>
 <url><loc>https://pedrobtz.github.io/quak/dev/reference/tbl_delta.html</loc></url>
 <url><loc>https://pedrobtz.github.io/quak/dev/reference/tbl_json.html</loc></url>

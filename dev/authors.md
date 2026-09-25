@@ -11,12 +11,12 @@ Source:
 
 Baltazar P (2026). *quak: Query 'Azure Data Lake Storage Gen2' with
 'DuckDB'*. R package version 0.1.0.9000,
-<https://github.com/pedrobtz/quak>.
+<https://pedrobtz.github.io/quak>.
 
     @Manual{,
       title = {quak: Query 'Azure Data Lake Storage Gen2' with 'DuckDB'},
       author = {Pedro Baltazar},
       year = {2026},
       note = {R package version 0.1.0.9000},
-      url = {https://github.com/pedrobtz/quak},
+      url = {https://pedrobtz.github.io/quak},
     }

@@ -25,7 +25,7 @@ Character scalar. Path to the extension directory.
 ``` r
 conn <- DBI::dbConnect(duckdb::duckdb())
 #> duckdb keeps downloaded extensions and secrets in a temporary directory:
-#> ℹ /tmp/RtmpDY9XQw/duckdb
+#> ℹ /tmp/Rtmp3eHl3G/duckdb
 #> This is removed when the R session ends.
 #> • Extensions are re-downloaded each session.
 #> • Secrets are lost.
@@ -33,6 +33,6 @@ conn <- DBI::dbConnect(duckdb::duckdb())
 #> ℹ Run duckdb(shared_home = FALSE) to accept the temporary directory (and silence this message).
 #> ℹ See ?duckdb_storage for details and alternatives.
 ext_dir(conn)
-#> [1] "/tmp/RtmpDY9XQw/duckdb/extensions"
+#> [1] "/tmp/Rtmp3eHl3G/duckdb/extensions"
 DBI::dbDisconnect(conn, shutdown = TRUE)
 ```

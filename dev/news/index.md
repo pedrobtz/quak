@@ -2,6 +2,22 @@
 
 ## quak (development version)
 
+- New
+  [`collect_arrow()`](https://pedrobtz.github.io/quak/dev/reference/collect_arrow.md)
+  and
+  [`stream_arrow()`](https://pedrobtz.github.io/quak/dev/reference/stream_arrow.md)
+  return the result of a lazy Azure table as Arrow data, either all at
+  once or in batches, without converting it to a data frame. They need
+  the nanoarrow package. The new “Arrow output” article on the package
+  website shows how to use them with arrow.
+
+- New “DuckDB connection settings” article on the package website
+  explains which DuckDB settings to change for shared servers,
+  containers and large queries.
+
+- quak now requires duckdb 1.5.4 or later, the first release with the
+  DBI Arrow interface.
+
 ### Bug fixes
 
 - [`load_delta()`](https://pedrobtz.github.io/quak/dev/reference/load_delta.md)

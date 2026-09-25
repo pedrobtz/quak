@@ -57,7 +57,7 @@ reflecting the current option values.
 old <- repo_urls()
 repo_set_urls(core = "https://extensions.example.com", check = FALSE)
 #> duckdb keeps downloaded extensions and secrets in a temporary directory:
-#> ℹ /tmp/RtmpDY9XQw/duckdb
+#> ℹ /tmp/Rtmp3eHl3G/duckdb
 #> This is removed when the R session ends.
 #> • Extensions are re-downloaded each session.
 #> • Secrets are lost.
