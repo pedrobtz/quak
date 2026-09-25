@@ -43,7 +43,7 @@ sales <- tbl_delta(conn, "abfss://container@account/path/sales")
 | You want | Use | You get |
 |---|---|---|
 | An R data frame | `dplyr::collect()` | A tibble |
-| Arrow data, all in memory | `collect_arrow()` | A `nanoarrow_array` |
+| Arrow data, all in memory | `collect_arrow()` | A `nanoarrow_array_stream`, already read |
 | Arrow data, one batch at a time | `stream_arrow()` | A `nanoarrow_array_stream` |
 
 All three run the query in DuckDB. Filter, select and summarise before you
@@ -61,23 +61,26 @@ or the `azure` extension is not loaded.
 
 ## Collect the whole result
 
-`collect_arrow()` runs the query and returns one Arrow array. It holds every
-row, so the result must fit in memory.
+`collect_arrow()` runs the query and reads the whole result into memory. It
+returns the rows as an Arrow stream whose batches are already loaded. The
+query has finished by the time it returns, so the connection is free for
+other queries.
 
 ```{r}
 arr <- collect_arrow(large_sales)
 #> ℹ Collecting data from Azure...
 #> ✔ Done. 82500 rows collected in 93 ms.
-
-arr$length
-#> [1] 82500
 ```
 
-Convert the array to an R data frame with `as.data.frame()` or
-`tibble::as_tibble()`. Neither needs the arrow package:
+Like every Arrow stream, the result can be read only once. Convert it
+straight away and keep the converted object.
+
+For an R data frame, use `as.data.frame()` or `tibble::as_tibble()`. Neither
+needs the arrow package:
 
 ```{r}
-head(as.data.frame(arr), 3)
+df <- as.data.frame(arr)
+head(df, 3)
 #>   id region amount
 #> 1 67  south  100.5
 #> 2 68   east  102.0
@@ -90,12 +93,13 @@ query or convert through arrow. See `?collect_arrow` for the full list.
 
 ### Continue with arrow
 
-`arrow::as_arrow_table()` turns the array into an Arrow Table. From there you
-can use arrow's own dplyr support, which runs in Arrow's query engine rather
-than in R:
+To keep working in Arrow instead, convert the result with
+`arrow::as_arrow_table()`. Unlike the stream, a Table can be used as often
+as you like. You can use arrow's own dplyr support on it, which runs in
+Arrow's query engine rather than in R:
 
 ```{r}
-tab <- arrow::as_arrow_table(arr)
+tab <- arrow::as_arrow_table(collect_arrow(large_sales))
 
 tab |>
   dplyr::group_by(region) |>
@@ -125,8 +129,8 @@ the current batch is in memory, so the whole result never has to fit.
 stream <- stream_arrow(sales, chunk_size = 100000)
 ```
 
-A stream can be read only once. Once a batch has been read, it cannot be
-read from the stream again.
+As with `collect_arrow()`, a stream can be read only once. Once a batch has
+been read, it cannot be read from the stream again.
 
 ### Hand the stream to arrow
 
@@ -237,6 +241,10 @@ connection are not visible there.
 million. Smaller batches use less memory each. Larger batches mean fewer
 steps and less overhead per row. Lower it when rows are wide, for example
 when they hold long strings or nested columns.
+
+DuckDB allocates each batch for `chunk_size` rows before filling it, even
+when the result has fewer rows. Keep `chunk_size` modest: a value in the
+hundreds of millions can reserve gigabytes of memory.
 
 ## Related functions
 

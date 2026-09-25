@@ -1,15 +1,25 @@
 #' Collect an Azure-backed lazy tbl as Arrow data
 #'
 #' Runs the query behind a table created by [tbl_delta()], [tbl_parquet()],
-#' [tbl_csv()] or [tbl_json()] and returns the whole result as a single
-#' Arrow array, without converting it to an R data frame. Runs the same
-#' pre-flight checks as [collect.tbl_az()].
+#' [tbl_csv()] or [tbl_json()], reads the whole result into memory, and
+#' returns it as an Arrow stream, without converting it to an R data frame.
+#' Runs the same pre-flight checks as [collect.tbl_az()].
 #'
-#' Requires the \pkg{nanoarrow} package. Use [stream_arrow()] to read a
-#' large result in batches instead.
+#' The query has finished when `collect_arrow()` returns, so the connection
+#' is free for other queries. Use [stream_arrow()] instead to read a result
+#' that is too large to hold in memory.
+#'
+#' Requires the \pkg{nanoarrow} package.
+#'
+#' @section Reading the result:
+#' Like any Arrow stream, the result can be read only once. Convert it
+#' straight away, and keep the converted object:
+#'
+#' * `as.data.frame()` or `tibble::as_tibble()` for an R data frame.
+#' * `arrow::as_arrow_table()` for an Arrow Table, which can be reused.
 #'
 #' @section Converting the result:
-#' `as.data.frame()` and `tibble::as_tibble()` convert the array with
+#' `as.data.frame()` and `tibble::as_tibble()` convert the result with
 #' \pkg{nanoarrow}. The column types mostly match [collect.tbl_az()], with
 #' these exceptions:
 #'
@@ -20,46 +30,30 @@
 #'
 #' @param x A `tbl_az` produced by [tbl_delta()], [tbl_parquet()],
 #'   [tbl_csv()] or [tbl_json()].
-#' @return A `nanoarrow_array` with one struct column per result column.
+#' @return A `nanoarrow_array_stream` whose batches are already in memory.
 #' @seealso [stream_arrow()] to read the result in batches.
 #' @examples
 #' \dontrun{
 #' # Requires a live Azure account, credentials, and network access.
 #' conn <- az_conn()
 #' sales <- tbl_delta(conn, "abfss://container@account/path/sales")
-#' arr <- collect_arrow(sales)
-#' as.data.frame(arr)
-#' arrow::as_arrow_table(arr)
+#' tab <- arrow::as_arrow_table(collect_arrow(sales))
 #' }
 #' @export
 collect_arrow <- function(x) {
   src <- arrow_source(x)
   collect_inform_start()
   start <- proc.time()[["elapsed"]]
-  # A batch as large as possible holds the whole result. Combining several
-  # batches into one array would need the arrow package.
-  stream <- arrow_stream(src, chunk_size = .Machine$integer.max)
+  # DuckDB allocates every batch for `chunk_size` rows up front, so read in
+  # batches of the default size rather than asking for one huge batch.
+  # nanoarrow cannot combine batches into one array without arrow.
+  stream <- arrow_stream(src, chunk_size = 1e6)
   on.exit(stream$release(), add = TRUE)
   schema <- stream$get_schema()
   batches <- nanoarrow::collect_array_stream(stream)
-  if (length(batches) > 1L) {
-    abort_bad_arg(
-      c(
-        "The result has more than {.Machine$integer.max} rows, too many for one array.",
-        "i" = "Use {.fn stream_arrow} to read it in batches."
-      ),
-      arg = "x"
-    )
-  }
-  # Build an empty result from the schema natively. DBI::dbFetchArrowChunk()
-  # goes through an R prototype instead, which fails for LIST and INTERVAL.
-  result <- if (length(batches) == 0L) {
-    nanoarrow::nanoarrow_array_init(schema)
-  } else {
-    batches[[1L]]
-  }
-  collect_inform_done(result$length, proc.time()[["elapsed"]] - start)
-  result
+  rows <- sum(vapply(batches, function(b) as.numeric(b$length), numeric(1)))
+  collect_inform_done(rows, proc.time()[["elapsed"]] - start)
+  nanoarrow::basic_array_stream(batches, schema = schema, validate = FALSE)
 }
 
 #' Stream an Azure-backed lazy tbl as Arrow record batches
@@ -85,7 +79,8 @@ collect_arrow <- function(x) {
 #'
 #' @inheritParams collect_arrow
 #' @param chunk_size Positive whole number. The maximum number of rows in
-#'   each batch.
+#'   each batch. DuckDB allocates each batch for `chunk_size` rows up front,
+#'   so a very large value reserves a lot of memory.
 #' @return A `nanoarrow_array_stream`.
 #' @seealso [collect_arrow()] to read the whole result at once.
 #' @examples

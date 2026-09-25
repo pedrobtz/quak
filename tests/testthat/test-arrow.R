@@ -1,4 +1,4 @@
-test_that("collect_arrow returns the whole result as one nanoarrow array", {
+test_that("collect_arrow returns the whole result as an in-memory stream", {
   skip_if_not_installed("dplyr")
   skip_if_not_installed("dbplyr")
   skip_if_not_installed("nanoarrow")
@@ -7,25 +7,50 @@ test_that("collect_arrow returns the whole result as one nanoarrow array", {
 
   out <- collect_arrow(tagged |> dplyr::filter(i >= 5))
 
-  expect_s3_class(out, "nanoarrow_array")
-  expect_equal(out$length, 20L)
+  expect_s3_class(out, "nanoarrow_array_stream")
   df <- as.data.frame(out)
   expect_named(df, c("i", "j"))
+  expect_equal(nrow(df), 20L)
   expect_equal(df$j, df$i * 2)
 })
 
-test_that("collect_arrow returns an empty array for an empty result", {
+test_that("collect_arrow returns every row when the result spans batches", {
+  skip_if_not_installed("dplyr")
+  skip_if_not_installed("dbplyr")
+  skip_if_not_installed("nanoarrow")
+  conn <- local_ext_conn()
+  tagged <- local_arrow_tbl(conn, n = 1500000L)
+
+  batches <- nanoarrow::collect_array_stream(collect_arrow(tagged))
+
+  expect_gt(length(batches), 1L)
+  expect_equal(sum(vapply(batches, function(b) b$length, integer(1))), 1500000L)
+})
+
+test_that("collect_arrow leaves the connection free for other queries", {
+  skip_if_not_installed("dplyr")
+  skip_if_not_installed("dbplyr")
+  skip_if_not_installed("nanoarrow")
+  conn <- local_ext_conn()
+  tagged <- local_arrow_tbl(conn)
+
+  out <- collect_arrow(tagged)
+  DBI::dbGetQuery(conn, "SELECT 42")
+
+  expect_equal(nrow(as.data.frame(out)), 25L)
+})
+
+test_that("collect_arrow returns an empty stream for an empty result", {
   skip_if_not_installed("dplyr")
   skip_if_not_installed("dbplyr")
   skip_if_not_installed("nanoarrow")
   conn <- local_ext_conn()
   tagged <- local_arrow_tbl(conn, n = 0L)
 
-  out <- collect_arrow(tagged)
+  df <- as.data.frame(collect_arrow(tagged))
 
-  expect_s3_class(out, "nanoarrow_array")
-  expect_equal(out$length, 0L)
-  expect_named(as.data.frame(out), c("i", "j"))
+  expect_equal(nrow(df), 0L)
+  expect_named(df, c("i", "j"))
 })
 
 test_that("collect_arrow handles nested and interval columns, empty or not", {
@@ -45,12 +70,9 @@ test_that("collect_arrow handles nested and interval columns, empty or not", {
 
   for (n in c(3L, 0L)) {
     out <- collect_arrow(dplyr::filter(tagged, st$a < n))
-    expect_s3_class(out, "nanoarrow_array")
-    expect_equal(out$length, n)
-    expect_named(
-      nanoarrow::infer_nanoarrow_schema(out)$children,
-      c("l", "st", "iv")
-    )
+    expect_named(out$get_schema()$children, c("l", "st", "iv"))
+    batches <- nanoarrow::collect_array_stream(out)
+    expect_equal(sum(vapply(batches, function(b) b$length, integer(1))), n)
   }
 })
 

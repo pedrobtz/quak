@@ -11,7 +11,8 @@ stream_arrow(x, chunk_size = 1e+06)
 \code{\link[=tbl_csv]{tbl_csv()}} or \code{\link[=tbl_json]{tbl_json()}}.}
 
 \item{chunk_size}{Positive whole number. The maximum number of rows in
-each batch.}
+each batch. DuckDB allocates each batch for \code{chunk_size} rows up front,
+so a very large value reserves a lot of memory.}
 }
 \value{
 A \code{nanoarrow_array_stream}.

@@ -11,21 +11,34 @@ collect_arrow(x)
 \code{\link[=tbl_csv]{tbl_csv()}} or \code{\link[=tbl_json]{tbl_json()}}.}
 }
 \value{
-A \code{nanoarrow_array} with one struct column per result column.
+A \code{nanoarrow_array_stream} whose batches are already in memory.
 }
 \description{
 Runs the query behind a table created by \code{\link[=tbl_delta]{tbl_delta()}}, \code{\link[=tbl_parquet]{tbl_parquet()}},
-\code{\link[=tbl_csv]{tbl_csv()}} or \code{\link[=tbl_json]{tbl_json()}} and returns the whole result as a single
-Arrow array, without converting it to an R data frame. Runs the same
-pre-flight checks as \code{\link[=collect.tbl_az]{collect.tbl_az()}}.
+\code{\link[=tbl_csv]{tbl_csv()}} or \code{\link[=tbl_json]{tbl_json()}}, reads the whole result into memory, and
+returns it as an Arrow stream, without converting it to an R data frame.
+Runs the same pre-flight checks as \code{\link[=collect.tbl_az]{collect.tbl_az()}}.
 }
 \details{
-Requires the \pkg{nanoarrow} package. Use \code{\link[=stream_arrow]{stream_arrow()}} to read a
-large result in batches instead.
+The query has finished when \code{collect_arrow()} returns, so the connection
+is free for other queries. Use \code{\link[=stream_arrow]{stream_arrow()}} instead to read a result
+that is too large to hold in memory.
+
+Requires the \pkg{nanoarrow} package.
 }
+\section{Reading the result}{
+
+Like any Arrow stream, the result can be read only once. Convert it
+straight away, and keep the converted object:
+\itemize{
+\item \code{as.data.frame()} or \code{tibble::as_tibble()} for an R data frame.
+\item \code{arrow::as_arrow_table()} for an Arrow Table, which can be reused.
+}
+}
+
 \section{Converting the result}{
 
-\code{as.data.frame()} and \code{tibble::as_tibble()} convert the array with
+\code{as.data.frame()} and \code{tibble::as_tibble()} convert the result with
 \pkg{nanoarrow}. The column types mostly match \code{\link[=collect.tbl_az]{collect.tbl_az()}}, with
 these exceptions:
 \itemize{
@@ -41,9 +54,7 @@ convert through \code{arrow::as_arrow_table()}.
 # Requires a live Azure account, credentials, and network access.
 conn <- az_conn()
 sales <- tbl_delta(conn, "abfss://container@account/path/sales")
-arr <- collect_arrow(sales)
-as.data.frame(arr)
-arrow::as_arrow_table(arr)
+tab <- arrow::as_arrow_table(collect_arrow(sales))
 }
 }
 \seealso{
