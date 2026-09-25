@@ -1,6 +1,8 @@
-# Validate that a URL is an Azure Data Lake URL
+# Validate and normalise an Azure Data Lake URL
 
-Validate that a URL is an Azure Data Lake URL
+Aborts when `url` is not an `abfss://` URL, then rewrites the
+`container@account` authority form to the account-host form DuckDB
+documents. Always use the returned value rather than the input.
 
 ## Usage
 
@@ -16,5 +18,4 @@ check_azure_url(url)
 
 ## Value
 
-Invisibly returns `NULL`; called for its side effect of aborting when
-`url` is not an `abfss://` URL.
+The normalised URL.

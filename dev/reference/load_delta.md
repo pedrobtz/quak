@@ -51,8 +51,9 @@ load_delta(
 
 - timestamp:
 
-  Optional Delta table timestamp to attach. Only one of `version` and
-  `timestamp` may be supplied.
+  Deprecated. Not supported: DuckDB's `delta` extension accepts a
+  `TIMESTAMP` attach option but ignores it, returning the latest
+  snapshot. Supplying it raises an error. Use `version` instead.
 
 ## Value
 

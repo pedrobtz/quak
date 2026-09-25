@@ -4,6 +4,7 @@
 <url><loc>https://pedrobtz.github.io/quak/dev/authors.html</loc></url>
 <url><loc>https://pedrobtz.github.io/quak/dev/index.html</loc></url>
 <url><loc>https://pedrobtz.github.io/quak/dev/news/index.html</loc></url>
+<url><loc>https://pedrobtz.github.io/quak/dev/reference/az_account_scopes.html</loc></url>
 <url><loc>https://pedrobtz.github.io/quak/dev/reference/az_conn.html</loc></url>
 <url><loc>https://pedrobtz.github.io/quak/dev/reference/az_conn_settings.html</loc></url>
 <url><loc>https://pedrobtz.github.io/quak/dev/reference/az_copy_to.html</loc></url>
@@ -50,6 +51,7 @@
 <url><loc>https://pedrobtz.github.io/quak/dev/reference/load_json.html</loc></url>
 <url><loc>https://pedrobtz.github.io/quak/dev/reference/load_parquet.html</loc></url>
 <url><loc>https://pedrobtz.github.io/quak/dev/reference/new_tbl_az.html</loc></url>
+<url><loc>https://pedrobtz.github.io/quak/dev/reference/normalize_azure_url.html</loc></url>
 <url><loc>https://pedrobtz.github.io/quak/dev/reference/print.quak_opts.html</loc></url>
 <url><loc>https://pedrobtz.github.io/quak/dev/reference/quak-package.html</loc></url>
 <url><loc>https://pedrobtz.github.io/quak/dev/reference/quak_options.html</loc></url>

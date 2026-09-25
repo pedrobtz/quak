@@ -88,8 +88,9 @@ the connection needs an Azure secret. Returns <code>conn</code> invisibly — us
 
 
 <dt id="arg-timestamp">timestamp<a class="anchor" aria-label="anchor" href="#arg-timestamp"></a></dt>
-<dd><p>Optional Delta table timestamp to attach. Only one of
-<code>version</code> and <code>timestamp</code> may be supplied.</p></dd>
+<dd><p>Deprecated. Not supported: DuckDB's <code>delta</code> extension
+accepts a <code>TIMESTAMP</code> attach option but ignores it, returning the latest
+snapshot. Supplying it raises an error. Use <code>version</code> instead.</p></dd>
 
 </dl></div>
     <div class="section level2">

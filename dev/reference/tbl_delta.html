@@ -88,8 +88,9 @@ Default <code>TRUE</code>. Ignored when <code>name = NULL</code>.</p></dd>
 
 
 <dt id="arg-timestamp">timestamp<a class="anchor" aria-label="anchor" href="#arg-timestamp"></a></dt>
-<dd><p>Optional Delta table timestamp to read. Only one of
-<code>version</code> and <code>timestamp</code> may be supplied.</p></dd>
+<dd><p>Deprecated. Not supported: DuckDB's <code>delta</code> extension
+accepts a <code>TIMESTAMP</code> attach option but ignores it, returning the latest
+snapshot. Supplying it raises an error. Use <code>version</code> instead.</p></dd>
 
 </dl></div>
     <div class="section level2">
@@ -103,7 +104,7 @@ no persistent object registered on the connection. When <code>name</code> is sup
 the table is first registered via <code><a href="load_delta.html">load_delta()</a></code> (as an ATTACH database or a
 VIEW depending on <code>method</code>), then referenced by name.</p>
 <p>Delta time travel currently requires <code>name</code> because DuckDB exposes
-<code>version</code> and <code>timestamp</code> through <code>ATTACH</code>, not <code>delta_scan()</code>.</p>
+<code>version</code> through <code>ATTACH</code>, not <code>delta_scan()</code>.</p>
     </div>
 
     <div class="section level2">
