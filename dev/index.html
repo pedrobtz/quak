@@ -52,67 +52,58 @@
 </h1></div>
 <!-- badges: start -->
 
-<p><code>quak</code> provides convenient utilities for using DuckDB with datasets stored in Azure Data Lake Storage Gen2 (<code>abfss://</code>). It opens connections configured for Azure-backed Delta Lake data, registers Azure credentials as DuckDB secrets, and works with both SQL via DBI and lazy table queries via dplyr and dbplyr.</p>
+<p><code>quak</code> provides convenient utilities for using DuckDB with datasets stored in Azure Data Lake Storage Gen2 (<code>abfss://</code>). It opens connections configured for Azure-backed Delta Lake, Parquet, CSV and JSON data, registers Azure credentials as DuckDB secrets, writes results back to the lake, and manages DuckDB extensions for restricted networks. It works with both SQL via DBI and lazy table queries via dplyr and dbplyr.</p>
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h2>
-<p><code>quak</code> is not yet on CRAN. Install the development version from GitHub:</p>
+<p>Install the released version from CRAN:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"quak"</span><span class="op">)</span></span></code></pre></div>
+<p>Or install the development version from GitHub:</p>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># install.packages("remotes")</span></span>
 <span><span class="fu">remotes</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"pedrobtz/quak"</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="connect-and-authenticate">Connect and authenticate<a class="anchor" aria-label="anchor" href="#connect-and-authenticate"></a>
 </h2>
-<p>Start by opening an Azure-ready DuckDB connection. Then register one Azure secret on that connection.</p>
-<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<p>Start by opening an Azure-ready DuckDB connection. <code><a href="reference/az_conn.html">az_conn()</a></code> installs and loads the <code>azure</code> and <code>delta</code> extensions but registers no credentials, so follow it with one of the secret helpers.</p>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/pedrobtz/quak" class="external-link">quak</a></span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">conn</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/az_conn.html">az_conn</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <p>Use a credential chain when you want DuckDB to resolve credentials itself, for example from the Azure CLI:</p>
-<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/pedrobtz/quak" class="external-link">quak</a></span><span class="op">)</span></span>
-<span></span>
-<span><span class="va">conn</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/az_conn.html">az_conn</a></span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="fu"><a href="reference/az_set_chain_secret.html">az_set_chain_secret</a></span><span class="op">(</span><span class="va">conn</span>, chain <span class="op">=</span> <span class="st">"cli"</span><span class="op">)</span></span></code></pre></div>
-<p>Use an access token when another package obtains the token for you:</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/pedrobtz/quak" class="external-link">quak</a></span><span class="op">)</span></span>
-<span></span>
-<span><span class="va">az_creds</span> <span class="op">&lt;-</span> <span class="fu">azr</span><span class="fu">::</span><span class="va"><a href="https://pedrobtz.github.io/azr/reference/DefaultCredential.html" class="external-link">DefaultCredential</a></span><span class="op">$</span><span class="fu">new</span><span class="op">(</span></span>
+<code class="sourceCode R"><span><span class="fu"><a href="reference/az_set_chain_secret.html">az_set_chain_secret</a></span><span class="op">(</span><span class="va">conn</span>, chain <span class="op">=</span> <span class="st">"cli"</span><span class="op">)</span></span></code></pre></div>
+<p>Use an access token when another package obtains the token for you:</p>
+<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">az_creds</span> <span class="op">&lt;-</span> <span class="fu">azr</span><span class="fu">::</span><span class="va"><a href="https://pedrobtz.github.io/azr/reference/DefaultCredential.html" class="external-link">DefaultCredential</a></span><span class="op">$</span><span class="fu">new</span><span class="op">(</span></span>
 <span>  scope <span class="op">=</span> <span class="fu"><a href="reference/az_default_scope.html">az_default_scope</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="op">)</span></span>
 <span></span>
-<span><span class="va">conn</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/az_conn.html">az_conn</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="fu"><a href="reference/az_set_token_secret.html">az_set_token_secret</a></span><span class="op">(</span><span class="va">conn</span>, token <span class="op">=</span> <span class="va">az_creds</span><span class="op">$</span><span class="fu">get_token</span><span class="op">(</span><span class="op">)</span><span class="op">$</span><span class="va">access_token</span><span class="op">)</span></span></code></pre></div>
 <p>Use a service principal when you want to pass the application credentials directly:</p>
-<div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/pedrobtz/quak" class="external-link">quak</a></span><span class="op">)</span></span>
-<span></span>
-<span><span class="va">conn</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/az_conn.html">az_conn</a></span><span class="op">(</span><span class="op">)</span></span>
-<span><span class="fu"><a href="reference/az_set_sp_secret.html">az_set_sp_secret</a></span><span class="op">(</span></span>
+<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="reference/az_set_sp_secret.html">az_set_sp_secret</a></span><span class="op">(</span></span>
 <span>  <span class="va">conn</span>,</span>
 <span>  tenant_id <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Sys.getenv.html" class="external-link">Sys.getenv</a></span><span class="op">(</span><span class="st">"AZURE_TENANT_ID"</span><span class="op">)</span>,</span>
 <span>  client_id <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Sys.getenv.html" class="external-link">Sys.getenv</a></span><span class="op">(</span><span class="st">"AZURE_CLIENT_ID"</span><span class="op">)</span>,</span>
 <span>  client_secret <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/Sys.getenv.html" class="external-link">Sys.getenv</a></span><span class="op">(</span><span class="st">"AZURE_CLIENT_SECRET"</span><span class="op">)</span></span>
 <span><span class="op">)</span></span></code></pre></div>
-<p>All secret helpers also accept <code>account = "storageaccount"</code> to scope the secret to one storage account.</p>
+<p>All secret helpers also accept <code>account = "storageaccount"</code> to scope the secret to one storage account. <code><a href="reference/az_list_secrets.html">az_list_secrets()</a></code> shows what is registered, and <code><a href="reference/az_tune.html">az_tune()</a></code> adjusts DuckDB’s Azure transport settings such as concurrency and chunk size.</p>
 </div>
 <div class="section level2">
-<h2 id="register-a-delta-table">Register a Delta table<a class="anchor" aria-label="anchor" href="#register-a-delta-table"></a>
+<h2 id="query-with-sql">Query with SQL<a class="anchor" aria-label="anchor" href="#query-with-sql"></a>
 </h2>
-<p>Use <code><a href="reference/load_delta.html">load_delta()</a></code> when you want to register a Delta table in DuckDB and query it with SQL.</p>
-<div class="sourceCode" id="cb6"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/pedrobtz/quak" class="external-link">quak</a></span><span class="op">)</span></span>
-<span></span>
-<span><span class="va">conn</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/az_conn.html">az_conn</a></span><span class="op">(</span><span class="op">)</span></span>
+<p>Use <code><a href="reference/load_delta.html">load_delta()</a></code> to register a Delta table in DuckDB and query it with SQL. The default <code>method = "attach"</code> attaches the table; <code>method = "view"</code> creates a view instead. <code>version</code> and <code>timestamp</code> select an earlier snapshot.</p>
+<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">conn</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/az_conn.html">az_conn</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="fu"><a href="reference/az_set_chain_secret.html">az_set_chain_secret</a></span><span class="op">(</span><span class="va">conn</span>, chain <span class="op">=</span> <span class="st">"cli"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu"><a href="reference/load_delta.html">load_delta</a></span><span class="op">(</span></span>
 <span>  conn <span class="op">=</span> <span class="va">conn</span>,</span>
 <span>  url <span class="op">=</span> <span class="st">"abfss://container@account/path/sales"</span>,</span>
-<span>  name <span class="op">=</span> <span class="st">"sales"</span>,</span>
-<span>  method <span class="op">=</span> <span class="st">"view"</span></span>
+<span>  name <span class="op">=</span> <span class="st">"sales"</span></span>
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu">DBI</span><span class="fu">::</span><span class="fu"><a href="https://dbi.r-dbi.org/reference/dbGetQuery.html" class="external-link">dbGetQuery</a></span><span class="op">(</span></span>
@@ -123,15 +114,14 @@
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu">DBI</span><span class="fu">::</span><span class="fu"><a href="https://dbi.r-dbi.org/reference/dbDisconnect.html" class="external-link">dbDisconnect</a></span><span class="op">(</span><span class="va">conn</span>, shutdown <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
+<p><code><a href="reference/load_parquet.html">load_parquet()</a></code>, <code><a href="reference/load_csv.html">load_csv()</a></code> and <code><a href="reference/load_json.html">load_json()</a></code> do the same for other formats, and <code><a href="reference/load_dataset.html">load_dataset()</a></code> dispatches on a <code>format</code> argument.</p>
 </div>
 <div class="section level2">
-<h2 id="use-a-lazy-table">Use a lazy table<a class="anchor" aria-label="anchor" href="#use-a-lazy-table"></a>
+<h2 id="query-with-dplyr">Query with dplyr<a class="anchor" aria-label="anchor" href="#query-with-dplyr"></a>
 </h2>
-<p>Use <code><a href="reference/tbl_delta.html">tbl_delta()</a></code> when you want to work with a Delta table through dplyr/dbplyr.</p>
-<div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/pedrobtz/quak" class="external-link">quak</a></span><span class="op">)</span></span>
-<span></span>
-<span><span class="va">conn</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/az_conn.html">az_conn</a></span><span class="op">(</span><span class="op">)</span></span>
+<p>Use <code><a href="reference/tbl_delta.html">tbl_delta()</a></code> when you want to work with a Delta table through dplyr/dbplyr. <code>collect()</code> checks that the connection is still open and the <code>azure</code> extension is loaded before the query runs.</p>
+<div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">conn</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/az_conn.html">az_conn</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="fu"><a href="reference/az_set_chain_secret.html">az_set_chain_secret</a></span><span class="op">(</span><span class="va">conn</span>, chain <span class="op">=</span> <span class="st">"cli"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">sales</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/tbl_delta.html">tbl_delta</a></span><span class="op">(</span><span class="va">conn</span>, <span class="st">"abfss://container@account/path/sales"</span><span class="op">)</span></span>
@@ -139,9 +129,51 @@
 <span><span class="va">sales</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">amount</span> <span class="op">&gt;</span> <span class="fl">100</span><span class="op">)</span> <span class="op">|&gt;</span></span>
 <span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/summarise.html" class="external-link">summarise</a></span><span class="op">(</span>avg_amount <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">amount</span>, na.rm <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span> <span class="op">|&gt;</span></span>
-<span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/compute.html" class="external-link">collect</a></span><span class="op">(</span><span class="op">)</span></span>
+<span>  <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/compute.html" class="external-link">collect</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<p><code><a href="reference/tbl_parquet.html">tbl_parquet()</a></code>, <code><a href="reference/tbl_csv.html">tbl_csv()</a></code> and <code><a href="reference/tbl_json.html">tbl_json()</a></code> open the other formats as lazy tables. <code><a href="reference/tbl_parquet.html">tbl_parquet()</a></code> accepts <code>hive_partitioning = TRUE</code> for partitioned directories.</p>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">events</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/tbl_parquet.html">tbl_parquet</a></span><span class="op">(</span></span>
+<span>  <span class="va">conn</span>,</span>
+<span>  <span class="st">"abfss://container@account/path/events/*.parquet"</span>,</span>
+<span>  hive_partitioning <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span><span class="op">)</span></span></code></pre></div>
+</div>
+<div class="section level2">
+<h2 id="inspect-and-write-data-on-the-lake">Inspect and write data on the lake<a class="anchor" aria-label="anchor" href="#inspect-and-write-data-on-the-lake"></a>
+</h2>
+<p>A few helpers look at what is on the lake without collecting it:</p>
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="reference/az_exists.html">az_exists</a></span><span class="op">(</span><span class="va">conn</span>, <span class="st">"abfss://container@account/path/sales"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="reference/az_glob.html">az_glob</a></span><span class="op">(</span><span class="va">conn</span>, <span class="st">"abfss://container@account/path/**/*.parquet"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="reference/az_schema.html">az_schema</a></span><span class="op">(</span><span class="va">conn</span>, <span class="st">"abfss://container@account/path/sales"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="reference/az_glimpse.html">az_glimpse</a></span><span class="op">(</span><span class="va">conn</span>, <span class="st">"abfss://container@account/path/sales"</span>, n <span class="op">=</span> <span class="fl">5</span><span class="op">)</span></span>
+<span><span class="fu"><a href="reference/az_delta_files.html">az_delta_files</a></span><span class="op">(</span><span class="va">conn</span>, <span class="st">"abfss://container@account/path/sales"</span><span class="op">)</span></span></code></pre></div>
+<p><code><a href="reference/az_copy_to.html">az_copy_to()</a></code> writes a lazy table, data frame or SQL query back to the lake with DuckDB’s <code>COPY ... TO</code>. <code><a href="reference/az_write_parquet.html">az_write_parquet()</a></code> is the Parquet shortcut.</p>
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="reference/az_write_parquet.html">az_write_parquet</a></span><span class="op">(</span></span>
+<span>  <span class="va">conn</span>,</span>
+<span>  <span class="va">sales</span> <span class="op">|&gt;</span> <span class="fu">dplyr</span><span class="fu">::</span><span class="fu"><a href="https://dplyr.tidyverse.org/reference/filter.html" class="external-link">filter</a></span><span class="op">(</span><span class="va">amount</span> <span class="op">&gt;</span> <span class="fl">100</span><span class="op">)</span>,</span>
+<span>  <span class="st">"abfss://container@account/path/sales_large"</span>,</span>
+<span>  partition_by <span class="op">=</span> <span class="st">"region"</span>,</span>
+<span>  overwrite <span class="op">=</span> <span class="cn">TRUE</span></span>
+<span><span class="op">)</span></span>
 <span></span>
 <span><span class="fu">DBI</span><span class="fu">::</span><span class="fu"><a href="https://dbi.r-dbi.org/reference/dbDisconnect.html" class="external-link">dbDisconnect</a></span><span class="op">(</span><span class="va">conn</span>, shutdown <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span></span></code></pre></div>
+</div>
+<div class="section level2">
+<h2 id="extensions-in-restricted-networks">Extensions in restricted networks<a class="anchor" aria-label="anchor" href="#extensions-in-restricted-networks"></a>
+</h2>
+<p>DuckDB fetches extensions from the internet on first use. On machines that cannot reach the default repositories, point quak at a mirror and keep a local cache of extension files.</p>
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="reference/repo_set_urls.html">repo_set_urls</a></span><span class="op">(</span></span>
+<span>  core <span class="op">=</span> <span class="st">"https://mirror.example.com/duckdb/core"</span>,</span>
+<span>  community <span class="op">=</span> <span class="st">"https://mirror.example.com/duckdb/community"</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="reference/ext_install.html">ext_install</a></span><span class="op">(</span><span class="st">"azure"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="reference/ext_load.html">ext_load</a></span><span class="op">(</span><span class="st">"delta"</span><span class="op">)</span></span>
+<span><span class="fu"><a href="reference/ext_list_installed.html">ext_list_installed</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
+<p><code><a href="reference/repo_set_urls.html">repo_set_urls()</a></code> stores the URLs in the <code>quak.core_repo</code> and <code>quak.community_repo</code> options, so they can be set once in <code>.Rprofile</code>. <code><a href="reference/ext_cache_path.html">ext_cache_path()</a></code> and <code><a href="reference/ext_set_dir.html">ext_set_dir()</a></code> control where cached extensions live, and <code><a href="reference/ext_install_local.html">ext_install_local()</a></code> installs from a file. <code><a href="reference/quak_options.html">quak_options()</a></code> prints every option quak reads, with its environment variable and current value.</p>
 </div>
 </div>
   </main><aside class="col-md-3"><div class="links">
@@ -179,6 +211,7 @@
 <div class="dev-status">
 <h2 data-toc-skip>Dev status</h2>
 <ul class="list-unstyled">
+<li><a href="https://www.r-pkg.org/pkg/quak" class="external-link"><img src="https://www.r-pkg.org/badges/version/quak" alt="PackageVersion"></a></li>
 <li><a href="https://github.com/pedrobtz/quak/actions/workflows/R-CMD-check.yaml" class="external-link"><img src="https://github.com/pedrobtz/quak/actions/workflows/R-CMD-check.yaml/badge.svg" alt="R-CMD-check"></a></li>
 <li><a href="https://github.com/pedrobtz/quak/actions/workflows/coverage.yaml" class="external-link"><img src="https://raw.githubusercontent.com/pedrobtz/quak/main/.github/badges/coverage.svg" alt="coverage"></a></li>
 </ul>
