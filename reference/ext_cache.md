@@ -41,5 +41,5 @@ An `ext_cache` object (a list of closures) with elements:
 ``` r
 cache <- ext_cache(file.path(tempdir(), "quak-cache"))
 cache$.path
-#> [1] "/tmp/Rtmpxk1cy7/quak-cache"
+#> [1] "/tmp/RtmpAWrwMQ/quak-cache"
 ```
