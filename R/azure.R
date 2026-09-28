@@ -100,7 +100,9 @@ az_list_secrets <- function(conn = conn_default()) {
 #' @param conn A DuckDB connection.
 #' @param token Character scalar. Access token value.
 #' @param account Optional storage account name. When supplied, the secret is
-#'   scoped to `abfss://<account>/`.
+#'   scoped to that account's hosts and applies to Parquet, CSV and JSON
+#'   reads. Delta tables never match an account-scoped secret, so register an
+#'   unscoped secret for them.
 #' @return Invisibly returns `conn`.
 #' @examples
 #' \dontrun{
@@ -159,7 +161,9 @@ az_set_token_secret <- function(
 #' @param client_id Character scalar. Service principal client ID.
 #' @param client_secret Character scalar. Service principal client secret.
 #' @param account Optional storage account name. When supplied, the secret is
-#'   scoped to that account.
+#'   scoped to that account's hosts and applies to Parquet, CSV and JSON
+#'   reads. Delta tables never match an account-scoped secret, so register an
+#'   unscoped secret for them.
 #' @return Invisibly returns `conn`.
 #' @examples
 #' \dontrun{
@@ -221,7 +225,9 @@ az_set_sp_secret <- function(
 #'
 #' @param conn A DuckDB connection.
 #' @param account Optional storage account name. When supplied, the secret is
-#'   scoped to that account.
+#'   scoped to that account's hosts and applies to Parquet, CSV and JSON
+#'   reads. Delta tables never match an account-scoped secret, so register an
+#'   unscoped secret for them.
 #' @param chain Optional character vector of DuckDB credential-chain entries.
 #'   Values are joined with semicolons and passed as DuckDB's `CHAIN` value.
 #'   Defaults to `"default"`, DuckDB's default credential chain.

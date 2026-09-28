@@ -10,7 +10,9 @@ az_set_chain_secret(conn, account = NULL, chain = "default")
 \item{conn}{A DuckDB connection.}
 
 \item{account}{Optional storage account name. When supplied, the secret is
-scoped to that account.}
+scoped to that account's hosts and applies to Parquet, CSV and JSON
+reads. Delta tables never match an account-scoped secret, so register an
+unscoped secret for them.}
 
 \item{chain}{Optional character vector of DuckDB credential-chain entries.
 Values are joined with semicolons and passed as DuckDB's \code{CHAIN} value.
