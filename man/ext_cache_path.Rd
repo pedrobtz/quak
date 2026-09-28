@@ -12,7 +12,7 @@ Character scalar. The resolved cache path.
 \description{
 Resolution order: in-memory value (\code{opts$set("cache_dir", ...)}) ->
 env var \code{QUAK_CACHE_DIR} -> OS-appropriate user cache directory via
-\code{\link[tools:userdir]{tools::R_user_dir()}}.
+\code{\link[tools:R_user_dir]{tools::R_user_dir()}}.
 }
 \examples{
 ext_cache_path()

@@ -48,6 +48,20 @@ test_that("cache_dir default is derived from tools::R_user_dir", {
   )
 })
 
+test_that("cache_dir default is resolved when read, not when built", {
+  local_opt("cache_dir", NULL)
+  withr::local_options(quak.cache_dir = NULL)
+  cache_home <- withr::local_tempdir()
+  withr::local_envvar(QUAK_CACHE_DIR = NA, R_USER_CACHE_DIR = cache_home)
+
+  expected <- tools::R_user_dir("quak", "cache")
+  expect_true(startsWith(expected, cache_home))
+  expect_equal(opts$get("cache_dir"), expected)
+
+  listed <- opts$list()
+  expect_equal(listed$default[listed$option == "cache_dir"], expected)
+})
+
 test_that("community_repo has correct default", {
   local_opt("community_repo", NULL)
   withr::with_envvar(

@@ -16,7 +16,7 @@
 A \code{\link[tibble:tibble]{tibble::tibble()}} with the collected rows.
 }
 \description{
-\code{\link[dplyr:compute]{dplyr::collect()}} method for tables created by \code{\link[=tbl_delta]{tbl_delta()}},
+\code{\link[dplyr:collect]{dplyr::collect()}} method for tables created by \code{\link[=tbl_delta]{tbl_delta()}},
 \code{\link[=tbl_parquet]{tbl_parquet()}}, \code{\link[=tbl_csv]{tbl_csv()}} and \code{\link[=tbl_json]{tbl_json()}}. Verifies that the backing
 DuckDB connection is still open and that the \code{azure} extension is loaded
 before the query is materialised, then defers to the underlying dbplyr

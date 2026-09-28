@@ -1,4 +1,4 @@
-# quak (development version)
+# quak 0.1.1
 
 * New `collect_arrow()` and `stream_arrow()` return the result of a lazy
   Azure table as Arrow data, either all at once or in batches, without
@@ -10,10 +10,22 @@
   which DuckDB settings to change for shared servers, containers and large
   queries.
 
-* quak now requires duckdb 1.5.4 or later, the first release with the DBI
-  Arrow interface.
+* quak now requires duckdb 1.5.4 or later and DBI 1.2.0 or later, the first
+  releases with the DBI Arrow interface. It also declares R 4.1.0 or later,
+  which it already needed.
+
+* The extension repository check now runs when quak is attached rather than
+  when it is loaded. It reports through startup messages, which
+  `suppressPackageStartupMessages()` silences. It gives up on a repository
+  after 10 seconds without a connection, and never stops quak from loading.
 
 ## Bug fixes
+
+* The default extension cache directory is now worked out on the machine
+  where quak runs. It was worked out when the package was built, so binary
+  packages pointed it at the build machine's home directory, for example
+  `/home/builder/.cache/R/quak`. When DuckDB's own `INSTALL` failed, the
+  manual install then stopped with "permission denied" (#15).
 
 * `load_delta()` and `tbl_delta()` no longer accept `timestamp`. DuckDB's
   `delta` extension accepts a `TIMESTAMP` attach option but ignores it, so
