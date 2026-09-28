@@ -1,4 +1,4 @@
-.onLoad <- function(libname, pkgname) {
+.onAttach <- function(libname, pkgname) {
   if (rlang::is_interactive()) {
     repo_startup_check()
   }

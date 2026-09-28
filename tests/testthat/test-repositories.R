@@ -151,3 +151,38 @@ test_that("repo_check rejects empty ext vector", {
     "character vector"
   )
 })
+
+test_that("repo_startup_check reports unreachable repos as startup messages", {
+  local_opt("startup_repo_check", TRUE)
+  local_mocked_bindings(repo_check = function(repo, ...) c(x = repo != "core"))
+  expect_message(
+    repo_startup_check(),
+    "core repository may be unreachable",
+    class = "packageStartupMessage"
+  )
+})
+
+test_that("repo_startup_check turns errors into a startup message", {
+  local_opt("startup_repo_check", TRUE)
+  local_mocked_bindings(repo_check = function(...) stop("boom"))
+  expect_message(
+    expect_no_error(repo_startup_check()),
+    "skipped the extension repository check: boom",
+    class = "packageStartupMessage"
+  )
+})
+
+test_that("repo_startup_check survives an invalid option value", {
+  local_opt("startup_repo_check", "maybe")
+  expect_message(
+    repo_startup_check(),
+    "skipped the extension repository check",
+    class = "packageStartupMessage"
+  )
+})
+
+test_that("repo_startup_check does nothing when disabled", {
+  local_opt("startup_repo_check", FALSE)
+  local_mocked_bindings(repo_check = function(...) stop("must not run"))
+  expect_silent(repo_startup_check())
+})

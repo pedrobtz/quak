@@ -88,9 +88,10 @@ extensions. The data, table and lake functions call `ensure_azure_exts()`, which
 `auto_install = FALSE`. A connection that skipped `az_conn()` therefore fails
 fast with `quak_error_extension_not_loaded` instead of downloading anything.
 
-`.onLoad` ([R/zzz.R](R/zzz.R)) sends HTTP HEAD requests to both extension
-repositories in interactive sessions. Set `QUAK_STARTUP_REPO_CHECK=false` to
-disable this.
+`.onAttach` ([R/zzz.R](R/zzz.R)) sends HTTP HEAD requests to both extension
+repositories in interactive sessions and reports through
+`packageStartupMessage()`. It must never raise. Set
+`QUAK_STARTUP_REPO_CHECK=false` to disable this.
 
 ## Invariants that are easy to break
 

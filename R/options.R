@@ -1,13 +1,15 @@
 # Package option registry.
 # Each entry: value (set via opts$set), env (env var name), default (built-in fallback).
 # opts$get() resolution order: value -> options(quak.*) -> Sys.getenv(env) -> default
+# A default that depends on the user or machine must be a function: this block
+# runs at build time, so a plain value would be frozen on the build machine.
 opts <- local({
   .spec <- list2env(
     list(
       cache_dir = list(
         value = NULL,
         env = "QUAK_CACHE_DIR",
-        default = tools::R_user_dir("quak", "cache")
+        default = function() tools::R_user_dir("quak", "cache")
       ),
       core_repo = list(
         value = NULL,
@@ -53,6 +55,11 @@ opts <- local({
 
   .sentinel <- new.env(parent = emptyenv())
 
+  spec_default <- function(name) {
+    default <- .spec[[name]]$default
+    if (is.function(default)) default() else default
+  }
+
   coerce <- function(name, value) {
     spec <- .spec[[name]]
     type <- spec$type
@@ -94,7 +101,7 @@ opts <- local({
     if (nzchar(env)) {
       return(list(value = coerce(name, env), source = "envvar"))
     }
-    list(value = coerce(name, spec$default), source = "default")
+    list(value = coerce(name, spec_default(name)), source = "default")
   }
 
   get <- function(name, default = .sentinel) {
@@ -151,7 +158,7 @@ opts <- local({
       env_value = unname(env_raw),
       default = unname(vapply(
         names,
-        function(n) format_value(.spec[[n]]$default),
+        function(n) format_value(spec_default(n)),
         character(1)
       ))
     ))

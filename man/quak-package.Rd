@@ -11,6 +11,7 @@ Provides convenience utilities for using 'DuckDB' directly over datasets stored 
 \seealso{
 Useful links:
 \itemize{
+  \item \url{https://pedrobtz.github.io/quak/}
   \item \url{https://github.com/pedrobtz/quak}
   \item Report bugs at \url{https://github.com/pedrobtz/quak/issues}
 }
@@ -18,6 +19,11 @@ Useful links:
 }
 \author{
 \strong{Maintainer}: Pedro Baltazar \email{pedrobtz@gmail.com} [copyright holder]
+
+Authors:
+\itemize{
+  \item Pedro Baltazar \email{pedrobtz@gmail.com} [copyright holder]
+}
 
 }
 \keyword{internal}

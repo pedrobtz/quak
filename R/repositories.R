@@ -166,19 +166,31 @@ repo_check <- function(
   invisible(ok)
 }
 
+# Runs from .onAttach, so it must never raise: any failure becomes a startup
+# message, which users can silence with suppressPackageStartupMessages().
 repo_startup_check <- function() {
-  if (!opts$get("startup_repo_check")) {
-    return(invisible(NULL))
-  }
-  for (nm in c("core", "community")) {
-    ok <- repo_check(nm)
-    if (!all(ok)) {
-      url <- opts$get(paste0(nm, "_repo"))
-      cli::cli_alert_warning(
-        "quak: {nm} repository may be unreachable: {.url {url}}"
+  tryCatch(
+    {
+      if (!opts$get("startup_repo_check")) {
+        return(invisible(NULL))
+      }
+      for (nm in c("core", "community")) {
+        ok <- repo_check(nm)
+        if (!all(ok)) {
+          url <- opts$get(paste0(nm, "_repo"))
+          packageStartupMessage(cli::format_inline(
+            "quak: {nm} repository may be unreachable: {.url {url}}"
+          ))
+        }
+      }
+    },
+    error = function(e) {
+      packageStartupMessage(
+        "quak: skipped the extension repository check: ",
+        conditionMessage(e)
       )
     }
-  }
+  )
   invisible(NULL)
 }
 
@@ -187,8 +199,14 @@ repo_head_ok <- function(url) {
   !inherits(resp, "error") && http_status_ok(resp$status_code)
 }
 
+# A HEAD request should answer quickly; without a connect timeout an
+# unreachable repository stalls until the operating system gives up.
 repo_head_probe <- function(url) {
-  handle <- curl::new_handle(nobody = TRUE, followlocation = TRUE)
+  handle <- curl::new_handle(
+    nobody = TRUE,
+    followlocation = TRUE,
+    connecttimeout = 10L
+  )
   tryCatch(
     curl::curl_fetch_memory(url, handle = handle),
     error = function(e) e

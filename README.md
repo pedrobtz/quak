@@ -78,7 +78,7 @@ chunk size.
 
 Use `load_delta()` to register a Delta table in DuckDB and query it with SQL.
 The default `method = "attach"` attaches the table; `method = "view"` creates
-a view instead. `version` and `timestamp` select an earlier snapshot.
+a view instead. `version` selects an earlier snapshot.
 
 ```r
 conn <- az_conn()
