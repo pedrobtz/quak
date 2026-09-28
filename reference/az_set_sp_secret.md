@@ -30,7 +30,9 @@ az_set_sp_secret(conn, tenant_id, client_id, client_secret, account = NULL)
 - account:
 
   Optional storage account name. When supplied, the secret is scoped to
-  that account.
+  that account's hosts and applies to Parquet, CSV and JSON reads. Delta
+  tables never match an account-scoped secret, so register an unscoped
+  secret for them.
 
 ## Value
 

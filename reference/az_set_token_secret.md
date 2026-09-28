@@ -23,7 +23,9 @@ az_set_token_secret(conn, token, account = NULL)
 - account:
 
   Optional storage account name. When supplied, the secret is scoped to
-  `abfss://<account>/`.
+  that account's hosts and applies to Parquet, CSV and JSON reads. Delta
+  tables never match an account-scoped secret, so register an unscoped
+  secret for them.
 
 ## Value
 

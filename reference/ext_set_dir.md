@@ -33,7 +33,7 @@ Invisibly returns the normalized extension directory path.
 ``` r
 conn <- DBI::dbConnect(duckdb::duckdb())
 #> duckdb keeps downloaded extensions and secrets in a temporary directory:
-#> ℹ /tmp/RtmpAWrwMQ/duckdb
+#> ℹ /tmp/RtmpkZ3wD1/duckdb
 #> This is removed when the R session ends.
 #> • Extensions are re-downloaded each session.
 #> • Secrets are lost.

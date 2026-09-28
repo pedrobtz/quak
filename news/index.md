@@ -34,6 +34,20 @@
   failed, the manual install then stopped with “permission denied”
   ([\#15](https://github.com/pedrobtz/quak/issues/15)).
 
+- [`tbl_delta()`](https://pedrobtz.github.io/quak/reference/tbl_delta.md),
+  [`load_delta()`](https://pedrobtz.github.io/quak/reference/load_delta.md),
+  [`az_delta_files()`](https://pedrobtz.github.io/quak/reference/az_delta_files.md)
+  and the Delta readers behind
+  [`az_schema()`](https://pedrobtz.github.io/quak/reference/az_schema.md)
+  and
+  [`az_glimpse()`](https://pedrobtz.github.io/quak/reference/az_glimpse.md)
+  work again. They passed the `delta` extension the account-host URL
+  form (`abfss://account.dfs.core.windows.net/container/path`), which it
+  rejects with “URL did not match any known pattern”. They now pass
+  `abfss://container@account.dfs.core.windows.net/path`. Delta tables
+  never match an account-scoped secret, so use an unscoped secret for
+  them ([\#18](https://github.com/pedrobtz/quak/issues/18)).
+
 - [`load_delta()`](https://pedrobtz.github.io/quak/reference/load_delta.md)
   and
   [`tbl_delta()`](https://pedrobtz.github.io/quak/reference/tbl_delta.md)

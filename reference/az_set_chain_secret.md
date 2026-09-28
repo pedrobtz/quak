@@ -19,7 +19,9 @@ az_set_chain_secret(conn, account = NULL, chain = "default")
 - account:
 
   Optional storage account name. When supplied, the secret is scoped to
-  that account.
+  that account's hosts and applies to Parquet, CSV and JSON reads. Delta
+  tables never match an account-scoped secret, so register an unscoped
+  secret for them.
 
 - chain:
 
