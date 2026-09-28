@@ -11,6 +11,8 @@ for SQL workflows and with 'dplyr' and 'dbplyr' for lazy table queries.
 
 Useful links:
 
+- <https://pedrobtz.github.io/quak/>
+
 - <https://github.com/pedrobtz/quak>
 
 - Report bugs at <https://github.com/pedrobtz/quak/issues>
@@ -18,3 +20,7 @@ Useful links:
 ## Author
 
 **Maintainer**: Pedro Baltazar <pedrobtz@gmail.com> \[copyright holder\]
+
+Authors:
+
+- Pedro Baltazar <pedrobtz@gmail.com> \[copyright holder\]

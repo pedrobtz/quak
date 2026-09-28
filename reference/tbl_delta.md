@@ -52,8 +52,9 @@ tbl_delta(
 
 - timestamp:
 
-  Optional Delta table timestamp to read. Only one of `version` and
-  `timestamp` may be supplied.
+  Deprecated. Not supported: DuckDB's `delta` extension accepts a
+  `TIMESTAMP` attach option but ignores it, returning the latest
+  snapshot. Supplying it raises an error. Use `version` instead.
 
 ## Value
 
@@ -70,7 +71,7 @@ supplied the table is first registered via
 by name.
 
 Delta time travel currently requires `name` because DuckDB exposes
-`version` and `timestamp` through `ATTACH`, not `delta_scan()`.
+`version` through `ATTACH`, not `delta_scan()`.
 
 ## Examples
 
