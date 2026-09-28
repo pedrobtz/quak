@@ -366,7 +366,7 @@ sql_scan_source <- function(url, format, conn) {
     ),
     csv = sql_csv_source(url, conn),
     json = sql_json_source(url, conn),
-    delta = glue::glue_sql("delta_scan({url})", .con = conn)
+    delta = glue::glue_sql("delta_scan({delta_url(url)})", .con = conn)
   )
 }
 

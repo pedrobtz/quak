@@ -33,5 +33,8 @@ az_delta_files <- function(conn, url) {
 }
 
 sql_delta_files <- function(url, conn) {
-  glue::glue_sql("SELECT * FROM delta_list_files({url})", .con = conn)
+  glue::glue_sql(
+    "SELECT * FROM delta_list_files({delta_url(url)})",
+    .con = conn
+  )
 }

@@ -47,6 +47,37 @@ test_that("normalize_azure_url preserves globs and handles a bare prefix", {
   )
 })
 
+test_that("delta_url rewrites the account-host form to container@account", {
+  expect_equal(
+    delta_url("abfss://acct.dfs.core.windows.net/c/data/sales"),
+    "abfss://c@acct.dfs.core.windows.net/data/sales"
+  )
+  expect_equal(
+    delta_url("abfs://acct.dfs.core.windows.net/c"),
+    "abfs://c@acct.dfs.core.windows.net"
+  )
+  # The round trip from the container@account input form, as used by 0.1.0.
+  expect_equal(
+    delta_url(check_azure_url("abfss://c@acct.dfs.core.windows.net/t")),
+    "abfss://c@acct.dfs.core.windows.net/t"
+  )
+  expect_equal(
+    delta_url(check_azure_url("abfss://c@acct/t")),
+    "abfss://c@acct.dfs.core.windows.net/t"
+  )
+})
+
+test_that("delta_url leaves forms without an account host unchanged", {
+  unchanged <- c(
+    "abfss://c/data/sales",
+    "abfss://c@acct.dfs.core.windows.net/t",
+    "abfss://acct.dfs.core.windows.net"
+  )
+  for (url in unchanged) {
+    expect_equal(delta_url(url), url)
+  }
+})
+
 test_that("check_azure_url rejects non-Azure URLs", {
   expect_error(
     check_azure_url("https://example.com/x"),
@@ -169,6 +200,54 @@ test_that("load_json validates its arguments before any I/O", {
 test_that("sql_or_replace toggles the OR REPLACE clause", {
   expect_equal(sql_or_replace(TRUE), "OR REPLACE ")
   expect_equal(sql_or_replace(FALSE), "")
+})
+
+test_that("delta SQL builders pass the container@account form", {
+  conn <- local_ext_conn()
+  url <- check_azure_url("abfss://c@a.dfs.core.windows.net/t")
+  expected <- "'abfss://c@a.dfs.core.windows.net/t'"
+
+  expect_match(as.character(sql_delta_scan(url, conn)), expected, fixed = TRUE)
+  expect_match(
+    as.character(sql_delta_attach(url, "tbl", TRUE, conn)),
+    expected,
+    fixed = TRUE
+  )
+  expect_match(
+    as.character(sql_scan_source(url, "delta", conn)),
+    expected,
+    fixed = TRUE
+  )
+  expect_match(as.character(sql_delta_files(url, conn)), expected, fixed = TRUE)
+  # Non-Delta readers keep the account-host form, which account scopes match.
+  expect_match(
+    as.character(sql_scan_source(url, "parquet", conn)),
+    "'abfss://a.dfs.core.windows.net/c/t'",
+    fixed = TRUE
+  )
+})
+
+test_that("delta_scan accepts the URL quak builds", {
+  # Regression: object_store rejects abfss://account.dfs.core.windows.net/...
+  # before any network I/O, so an unreachable fake account still tells the
+  # two apart: a good URL fails later, on authentication or DNS.
+  skip_on_cran()
+  skip_on_os("windows")
+  skip_if_offline()
+  conn <- local_ext_conn()
+  ext_install("azure", conn = conn)
+  ext_install("delta", conn = conn)
+  ext_load("azure", conn = conn)
+  ext_load("delta", conn = conn)
+  az_set_token_secret(conn, token = "fake-token")
+
+  url <- check_azure_url("abfss://c@quakfake.dfs.core.windows.net/t")
+  err <- tryCatch(
+    DBI::dbGetQuery(conn, sql_delta_scan(url, conn)),
+    error = function(e) e
+  )
+  expect_s3_class(err, "error")
+  expect_no_match(conditionMessage(err), "did not match any known pattern")
 })
 
 test_that("delta SQL builders embed the scan, URL, and clauses", {

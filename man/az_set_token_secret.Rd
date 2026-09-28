@@ -12,7 +12,9 @@ az_set_token_secret(conn, token, account = NULL)
 \item{token}{Character scalar. Access token value.}
 
 \item{account}{Optional storage account name. When supplied, the secret is
-scoped to \verb{abfss://<account>/}.}
+scoped to that account's hosts and applies to Parquet, CSV and JSON
+reads. Delta tables never match an account-scoped secret, so register an
+unscoped secret for them.}
 }
 \value{
 Invisibly returns \code{conn}.

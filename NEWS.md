@@ -27,6 +27,14 @@
   `/home/builder/.cache/R/quak`. When DuckDB's own `INSTALL` failed, the
   manual install then stopped with "permission denied" (#15).
 
+* `tbl_delta()`, `load_delta()`, `az_delta_files()` and the Delta readers
+  behind `az_schema()` and `az_glimpse()` work again. They passed the `delta`
+  extension the account-host URL form
+  (`abfss://account.dfs.core.windows.net/container/path`), which it rejects
+  with "URL did not match any known pattern". They now pass
+  `abfss://container@account.dfs.core.windows.net/path`. Delta tables never
+  match an account-scoped secret, so use an unscoped secret for them (#18).
+
 * `load_delta()` and `tbl_delta()` no longer accept `timestamp`. DuckDB's
   `delta` extension accepts a `TIMESTAMP` attach option but ignores it, so
   callers silently received the latest snapshot instead of a historical one.

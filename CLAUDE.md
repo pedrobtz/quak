@@ -103,7 +103,10 @@ repositories in interactive sessions and reports through
 - **Use the value that `check_azure_url()` returns.** It rewrites
   `abfss://container@account/...` into a form DuckDB accepts. DuckDB matches
   a secret's `SCOPE` as a plain prefix of the URL, so an account-scoped
-  secret only applies to the rewritten URL (`az_account_scopes()`).
+  secret only applies to the rewritten URL (`az_account_scopes()`). The
+  `delta` extension rejects that form, so every SQL builder that calls it
+  (`delta_scan`, `delta_list_files`, `ATTACH ... TYPE DELTA`) must pass the
+  URL through `delta_url()`. Account-scoped secrets never match Delta URLs.
 - **Build all SQL with `glue::glue_sql(..., .con = conn)`.** Quote
   identifiers as ``{`name`}``. The names of reader options are spliced in as
   raw SQL, so `check_reader_options()` restricts them to identifier syntax.
