@@ -2,6 +2,8 @@
 
 ## quak 0.1.1
 
+CRAN release: 2026-09-28
+
 - New
   [`collect_arrow()`](https://pedrobtz.github.io/quak/reference/collect_arrow.md)
   and

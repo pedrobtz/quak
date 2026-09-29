@@ -34,11 +34,11 @@
   <main id="main" class="col-md-9"><div class="page-header">
 
       <h1>Changelog</h1>
-      <small>Source: <a href="https://github.com/pedrobtz/quak/blob/main/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
+      <small>Source: <a href="https://github.com/pedrobtz/quak/blob/0.1.1/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
     <div class="section level2">
-<h2 class="pkg-version" data-toc-text="0.1.1" id="quak-011">quak 0.1.1<a class="anchor" aria-label="anchor" href="#quak-011"></a></h2>
+<h2 class="pkg-version" data-toc-text="0.1.1" id="quak-011">quak 0.1.1<a class="anchor" aria-label="anchor" href="#quak-011"></a></h2><p class="text-muted">CRAN release: 2026-09-28</p>
 <ul><li><p>New <code><a href="../reference/collect_arrow.html">collect_arrow()</a></code> and <code><a href="../reference/stream_arrow.html">stream_arrow()</a></code> return the result of a lazy Azure table as Arrow data, either all at once or in batches, without converting it to a data frame. They need the nanoarrow package. The new “Arrow output” article on the package website shows how to use them with arrow.</p></li>
 <li><p>New “DuckDB connection settings” article on the package website explains which DuckDB settings to change for shared servers, containers and large queries.</p></li>
 <li><p>quak now requires duckdb 1.5.4 or later and DBI 1.2.0 or later, the first releases with the DBI Arrow interface. It also declares R 4.1.0 or later, which it already needed.</p></li>
