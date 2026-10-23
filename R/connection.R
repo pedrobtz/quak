@@ -2,6 +2,11 @@
 #'
 #' Thin wrapper around [duckdb::duckdb()] with quak-friendly defaults.
 #'
+#' Automatic extension installation (`autoinstall_known_extensions`) is
+#' turned off unless `config` sets it, so a query never downloads an
+#' extension behind [ext_install()]'s back. DuckDB 2.0 turns it on by
+#' default, and duckdb 2.0.0 keeps that default.
+#'
 #' @param dbdir Character scalar. Database path. Defaults to `":memory:"`.
 #' @param read_only Logical. Open in read-only mode. Defaults to `FALSE`.
 #' @param bigint Character scalar. How to represent 64-bit integers.
@@ -28,6 +33,9 @@ conn_driver <- function(
 ) {
   if (unsigned) {
     config[["allow_unsigned_extensions"]] <- "true"
+  }
+  if (!("autoinstall_known_extensions" %in% names(config))) {
+    config[["autoinstall_known_extensions"]] <- "false"
   }
   duckdb::duckdb(
     dbdir = dbdir,

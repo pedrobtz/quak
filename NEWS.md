@@ -1,3 +1,14 @@
+# quak (development version)
+
+## Bug fixes
+
+* quak connections now turn DuckDB's automatic extension installation
+  (`autoinstall_known_extensions`) off unless `config` sets it. DuckDB 2.0
+  turns it on by default, and duckdb 2.0.0 keeps that default, so a query
+  that needed the `azure` or `delta` extension downloaded it without going
+  through `ext_install()` or its configured repository. A connection that has
+  not loaded the extensions fails fast again (#21).
+
 # quak 0.1.1
 
 * New `collect_arrow()` and `stream_arrow()` return the result of a lazy

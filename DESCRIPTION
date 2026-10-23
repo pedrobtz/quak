@@ -1,6 +1,6 @@
 Package: quak
 Title: Query 'Azure Data Lake Storage Gen2' with 'DuckDB'
-Version: 0.1.1
+Version: 0.1.1.9000
 Authors@R:
     person("Pedro", "Baltazar", email = "pedrobtz@gmail.com",
            role = c("aut", "cre", "cph"))
@@ -53,4 +53,4 @@ Collate:
     'delta.R'
     'quak-package.R'
     'zzz.R'
-Config/roxygen2/version: 8.0.0
+Config/roxygen2/version: 8.1.1

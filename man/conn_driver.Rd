@@ -41,4 +41,10 @@ A \code{duckdb_driver} object.
 \description{
 Thin wrapper around \code{\link[duckdb:duckdb]{duckdb::duckdb()}} with quak-friendly defaults.
 }
+\details{
+Automatic extension installation (\code{autoinstall_known_extensions}) is
+turned off unless \code{config} sets it, so a query never downloads an
+extension behind \code{\link[=ext_install]{ext_install()}}'s back. DuckDB 2.0 turns it on by
+default, and duckdb 2.0.0 keeps that default.
+}
 \keyword{internal}

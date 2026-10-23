@@ -94,6 +94,25 @@ test_that("az_tune warns when buffer size is not a chunk multiple", {
   )
 })
 
+test_that("conn_open turns automatic extension installation off", {
+  autoinstall <- function(conn) {
+    DBI::dbGetQuery(
+      conn,
+      "SELECT current_setting('autoinstall_known_extensions') AS v"
+    )$v
+  }
+
+  conn <- conn_open()
+  withr::defer(DBI::dbDisconnect(conn, shutdown = TRUE))
+  expect_false(autoinstall(conn))
+
+  conn_on <- conn_open(
+    drv = conn_driver(config = list(autoinstall_known_extensions = "true"))
+  )
+  withr::defer(DBI::dbDisconnect(conn_on, shutdown = TRUE))
+  expect_true(autoinstall(conn_on))
+})
+
 test_that("az_tune is quiet and wraps DuckDB setting failures", {
   conn <- local_ext_conn()
   local_mocked_bindings(
