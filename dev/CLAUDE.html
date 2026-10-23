@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="index.html">quak</a>
 
-    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">0.1.0.9000</small>
+    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">0.1.1.9000</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -85,14 +85,14 @@
 <li>
 <a href="R/datasets.R">R/datasets.R</a> registers data (<code>load_*()</code>). It also holds the shared SQL builders (<code>sql_*_scan()</code>, <code>sql_reader_options()</code>) and <code><a href="reference/ensure_azure_exts.html">ensure_azure_exts()</a></code>. <a href="R/tables.R">R/tables.R</a> wraps the same scans as <code>tbl_az</code> lazy tables, and <a href="R/arrow.R">R/arrow.R</a> collects them as Arrow data. <a href="R/lake.R">R/lake.R</a> inspects and writes files on the lake. <a href="R/delta.R">R/delta.R</a> lists Delta files.</li>
 </ol><p>Many functions default to <code>conn = conn_default()</code>, which is <code><a href="https://r.duckdb.org/reference/default_conn.html" class="external-link">duckdb::default_conn()</a></code>. Among the Azure helpers, only <code><a href="reference/az_conn.html">az_conn()</a></code> installs extensions. The data, table and lake functions call <code><a href="reference/ensure_azure_exts.html">ensure_azure_exts()</a></code>, which loads with <code>auto_install = FALSE</code>. A connection that skipped <code><a href="reference/az_conn.html">az_conn()</a></code> therefore fails fast with <code>quak_error_extension_not_loaded</code> instead of downloading anything.</p>
-<p><code>.onLoad</code> (<a href="R/zzz.R">R/zzz.R</a>) sends HTTP HEAD requests to both extension repositories in interactive sessions. Set <code>QUAK_STARTUP_REPO_CHECK=false</code> to disable this.</p>
+<p><code>.onAttach</code> (<a href="R/zzz.R">R/zzz.R</a>) sends HTTP HEAD requests to both extension repositories in interactive sessions and reports through <code><a href="https://rdrr.io/r/base/message.html" class="external-link">packageStartupMessage()</a></code>. It must never raise. Set <code>QUAK_STARTUP_REPO_CHECK=false</code> to disable this.</p>
 </div>
 <div class="section level2">
 <h2 id="invariants-that-are-easy-to-break">Invariants that are easy to break<a class="anchor" aria-label="anchor" href="#invariants-that-are-easy-to-break"></a></h2>
 <ul><li>
 <strong><code>DESCRIPTION</code> has a hand-maintained <code>Collate</code> field.</strong> No file uses <code>@include</code>. A new <code>R/*.R</code> file must be added to <code>Collate</code>, otherwise R does not load it. Keep top-level code to definitions. Anything evaluated at top level runs when the package is built, on the build machine, and depends on the <code>Collate</code> order.</li>
 <li>
-<strong>Use the value that <code><a href="reference/check_azure_url.html">check_azure_url()</a></code> returns.</strong> It rewrites <code>abfss://container@account/...</code> into a form DuckDB accepts. DuckDB matches a secret’s <code>SCOPE</code> as a plain prefix of the URL, so an account-scoped secret only applies to the rewritten URL (<code><a href="reference/az_account_scopes.html">az_account_scopes()</a></code>).</li>
+<strong>Use the value that <code><a href="reference/check_azure_url.html">check_azure_url()</a></code> returns.</strong> It rewrites <code>abfss://container@account/...</code> into a form DuckDB accepts. DuckDB matches a secret’s <code>SCOPE</code> as a plain prefix of the URL, so an account-scoped secret only applies to the rewritten URL (<code><a href="reference/az_account_scopes.html">az_account_scopes()</a></code>). The <code>delta</code> extension rejects that form, so every SQL builder that calls it (<code>delta_scan</code>, <code>delta_list_files</code>, <code>ATTACH ... TYPE DELTA</code>) must pass the URL through <code><a href="reference/delta_url.html">delta_url()</a></code>. Account-scoped secrets never match Delta URLs.</li>
 <li>
 <strong>Build all SQL with <code>glue::glue_sql(..., .con = conn)</code>.</strong> Quote identifiers as <code>{`name`}</code>. The names of reader options are spliced in as raw SQL, so <code>check_reader_options()</code> restricts them to identifier syntax. Do not relax that check without quoting the names another way.</li>
 <li>

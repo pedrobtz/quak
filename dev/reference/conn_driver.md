@@ -56,3 +56,12 @@ conn_driver(
 ## Value
 
 A `duckdb_driver` object.
+
+## Details
+
+Automatic extension installation (`autoinstall_known_extensions`) is
+turned off unless `config` sets it, so a query never downloads an
+extension behind
+[`ext_install()`](https://pedrobtz.github.io/quak/dev/reference/ext_install.md)'s
+back. DuckDB 2.0 turns it on by default, and duckdb 2.0.0 keeps that
+default.

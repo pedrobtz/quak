@@ -2,6 +2,22 @@
 
 ## quak (development version)
 
+### Bug fixes
+
+- quak connections now turn DuckDB’s automatic extension installation
+  (`autoinstall_known_extensions`) off unless `config` sets it. DuckDB
+  2.0 turns it on by default, and duckdb 2.0.0 keeps that default, so a
+  query that needed the `azure` or `delta` extension downloaded it
+  without going through
+  [`ext_install()`](https://pedrobtz.github.io/quak/dev/reference/ext_install.md)
+  or its configured repository. A connection that has not loaded the
+  extensions fails fast again
+  ([\#21](https://github.com/pedrobtz/quak/issues/21)).
+
+## quak 0.1.1
+
+CRAN release: 2026-09-28
+
 - New
   [`collect_arrow()`](https://pedrobtz.github.io/quak/dev/reference/collect_arrow.md)
   and
@@ -15,10 +31,38 @@
   explains which DuckDB settings to change for shared servers,
   containers and large queries.
 
-- quak now requires duckdb 1.5.4 or later, the first release with the
-  DBI Arrow interface.
+- quak now requires duckdb 1.5.4 or later and DBI 1.2.0 or later, the
+  first releases with the DBI Arrow interface. It also declares R 4.1.0
+  or later, which it already needed.
+
+- The extension repository check now runs when quak is attached rather
+  than when it is loaded. It reports through startup messages, which
+  [`suppressPackageStartupMessages()`](https://rdrr.io/r/base/message.html)
+  silences. It gives up on a repository after 10 seconds without a
+  connection, and never stops quak from loading.
 
 ### Bug fixes
+
+- The default extension cache directory is now worked out on the machine
+  where quak runs. It was worked out when the package was built, so
+  binary packages pointed it at the build machine’s home directory, for
+  example `/home/builder/.cache/R/quak`. When DuckDB’s own `INSTALL`
+  failed, the manual install then stopped with “permission denied”
+  ([\#15](https://github.com/pedrobtz/quak/issues/15)).
+
+- [`tbl_delta()`](https://pedrobtz.github.io/quak/dev/reference/tbl_delta.md),
+  [`load_delta()`](https://pedrobtz.github.io/quak/dev/reference/load_delta.md),
+  [`az_delta_files()`](https://pedrobtz.github.io/quak/dev/reference/az_delta_files.md)
+  and the Delta readers behind
+  [`az_schema()`](https://pedrobtz.github.io/quak/dev/reference/az_schema.md)
+  and
+  [`az_glimpse()`](https://pedrobtz.github.io/quak/dev/reference/az_glimpse.md)
+  work again. They passed the `delta` extension the account-host URL
+  form (`abfss://account.dfs.core.windows.net/container/path`), which it
+  rejects with “URL did not match any known pattern”. They now pass
+  `abfss://container@account.dfs.core.windows.net/path`. Delta tables
+  never match an account-scoped secret, so use an unscoped secret for
+  them ([\#18](https://github.com/pedrobtz/quak/issues/18)).
 
 - [`load_delta()`](https://pedrobtz.github.io/quak/dev/reference/load_delta.md)
   and

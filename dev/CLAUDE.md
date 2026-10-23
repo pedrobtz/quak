@@ -121,9 +121,11 @@ which loads with `auto_install = FALSE`. A connection that skipped
 therefore fails fast with `quak_error_extension_not_loaded` instead of
 downloading anything.
 
-`.onLoad` ([R/zzz.R](https://pedrobtz.github.io/quak/dev/R/zzz.R)) sends
-HTTP HEAD requests to both extension repositories in interactive
-sessions. Set `QUAK_STARTUP_REPO_CHECK=false` to disable this.
+`.onAttach` ([R/zzz.R](https://pedrobtz.github.io/quak/dev/R/zzz.R))
+sends HTTP HEAD requests to both extension repositories in interactive
+sessions and reports through
+[`packageStartupMessage()`](https://rdrr.io/r/base/message.html). It
+must never raise. Set `QUAK_STARTUP_REPO_CHECK=false` to disable this.
 
 ## Invariants that are easy to break
 
@@ -138,6 +140,11 @@ sessions. Set `QUAK_STARTUP_REPO_CHECK=false` to disable this.
   DuckDB accepts. DuckDB matches a secret’s `SCOPE` as a plain prefix of
   the URL, so an account-scoped secret only applies to the rewritten URL
   ([`az_account_scopes()`](https://pedrobtz.github.io/quak/dev/reference/az_account_scopes.md)).
+  The `delta` extension rejects that form, so every SQL builder that
+  calls it (`delta_scan`, `delta_list_files`, `ATTACH ... TYPE DELTA`)
+  must pass the URL through
+  [`delta_url()`](https://pedrobtz.github.io/quak/dev/reference/delta_url.md).
+  Account-scoped secrets never match Delta URLs.
 - **Build all SQL with `glue::glue_sql(..., .con = conn)`.** Quote
   identifiers as `` {`name`} ``. The names of reader options are spliced
   in as raw SQL, so `check_reader_options()` restricts them to

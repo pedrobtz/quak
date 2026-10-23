@@ -23,7 +23,7 @@
 
     <a class="navbar-brand me-2" href="index.html">quak</a>
 
-    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">0.1.0.9000</small>
+    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">0.1.1.9000</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -76,7 +76,7 @@
 </h2>
 <p>Start by opening an Azure-ready DuckDB connection. <code><a href="reference/az_conn.html">az_conn()</a></code> installs and loads the <code>azure</code> and <code>delta</code> extensions but registers no credentials, so follow it with one of the secret helpers.</p>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://pedrobtz.github.io/quak">quak</a></span><span class="op">)</span></span>
+<code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://pedrobtz.github.io/quak/">quak</a></span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">conn</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/az_conn.html">az_conn</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 <p>Use a credential chain when you want DuckDB to resolve credentials itself, for example from the Azure CLI:</p>
@@ -102,7 +102,7 @@
 <div class="section level2">
 <h2 id="query-with-sql">Query with SQL<a class="anchor" aria-label="anchor" href="#query-with-sql"></a>
 </h2>
-<p>Use <code><a href="reference/load_delta.html">load_delta()</a></code> to register a Delta table in DuckDB and query it with SQL. The default <code>method = "attach"</code> attaches the table; <code>method = "view"</code> creates a view instead. <code>version</code> and <code>timestamp</code> select an earlier snapshot.</p>
+<p>Use <code><a href="reference/load_delta.html">load_delta()</a></code> to register a Delta table in DuckDB and query it with SQL. The default <code>method = "attach"</code> attaches the table; <code>method = "view"</code> creates a view instead. <code>version</code> selects an earlier snapshot.</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="va">conn</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/az_conn.html">az_conn</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="fu"><a href="reference/az_set_chain_secret.html">az_set_chain_secret</a></span><span class="op">(</span><span class="va">conn</span>, chain <span class="op">=</span> <span class="st">"cli"</span><span class="op">)</span></span>

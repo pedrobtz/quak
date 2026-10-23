@@ -85,7 +85,7 @@ Use
 [`load_delta()`](https://pedrobtz.github.io/quak/dev/reference/load_delta.md)
 to register a Delta table in DuckDB and query it with SQL. The default
 `method = "attach"` attaches the table; `method = "view"` creates a view
-instead. `version` and `timestamp` select an earlier snapshot.
+instead. `version` selects an earlier snapshot.
 
 ``` r
 
