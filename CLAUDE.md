@@ -216,9 +216,14 @@ test, roxygen documentation, a `NEWS.md` entry, and an entry in
 
 ## Continuous integration
 
-`.github/workflows/` contains the standard `r-lib/actions` workflows:
-`R-CMD-check`, `coverage`, which commits the badge to `.github/badges/`,
-and `pkgdown`, which deploys to <https://pedrobtz.github.io/quak/>.
+`.github/workflows/` contains `R-CMD-check` and `pkgdown` from the
+standard `r-lib/actions` workflows, and `coverage`, which calls the
+shared `pedrobtz/r-actions` coverage workflow. `pkgdown` deploys to
+<https://pedrobtz.github.io/quak/>. The `main` ruleset rejects direct
+pushes, so the coverage badge is committed to `badges/coverage.svg` on
+`gh-pages`. The pkgdown deploy must keep `force: false` and
+`clean: false` (or exclude `badges`), otherwise it overwrites or deletes
+the badge.
 
 ## Commits and pull requests
 

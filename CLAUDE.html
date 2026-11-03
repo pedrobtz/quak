@@ -125,7 +125,7 @@
 </ul></div>
 <div class="section level2">
 <h2 id="continuous-integration">Continuous integration<a class="anchor" aria-label="anchor" href="#continuous-integration"></a></h2>
-<p><code>.github/workflows/</code> contains the standard <code>r-lib/actions</code> workflows: <code>R-CMD-check</code>, <code>coverage</code>, which commits the badge to <code>.github/badges/</code>, and <code>pkgdown</code>, which deploys to <a href="https://pedrobtz.github.io/quak/" class="uri">https://pedrobtz.github.io/quak/</a>.</p>
+<p><code>.github/workflows/</code> contains <code>R-CMD-check</code> and <code>pkgdown</code> from the standard <code>r-lib/actions</code> workflows, and <code>coverage</code>, which calls the shared <code>pedrobtz/r-actions</code> coverage workflow. <code>pkgdown</code> deploys to <a href="https://pedrobtz.github.io/quak/" class="uri">https://pedrobtz.github.io/quak/</a>. The <code>main</code> ruleset rejects direct pushes, so the coverage badge is committed to <code>badges/coverage.svg</code> on <code>gh-pages</code>. The pkgdown deploy must keep <code>force: false</code> and <code>clean: false</code> (or exclude <code>badges</code>), otherwise it overwrites or deletes the badge.</p>
 </div>
 <div class="section level2">
 <h2 id="commits-and-pull-requests">Commits and pull requests<a class="anchor" aria-label="anchor" href="#commits-and-pull-requests"></a></h2>
