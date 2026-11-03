@@ -7,15 +7,15 @@
 ## Citation
 
 Source:
-[`DESCRIPTION`](https://github.com/pedrobtz/quak/blob/0.1.1/DESCRIPTION)
+[`DESCRIPTION`](https://github.com/pedrobtz/quak/blob/main/DESCRIPTION)
 
 Baltazar P (2026). *quak: Query 'Azure Data Lake Storage Gen2' with
-'DuckDB'*. R package version 0.1.1, <https://pedrobtz.github.io/quak/>.
+'DuckDB'*. R package version 0.1.2, <https://pedrobtz.github.io/quak/>.
 
     @Manual{,
       title = {quak: Query 'Azure Data Lake Storage Gen2' with 'DuckDB'},
       author = {Pedro Baltazar},
       year = {2026},
-      note = {R package version 0.1.1},
+      note = {R package version 0.1.2},
       url = {https://pedrobtz.github.io/quak/},
     }
