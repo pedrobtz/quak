@@ -1,13 +1,10 @@
 ## Update submission
 
-This is an update from 0.1.0 to 0.1.1. It:
-
-* fixes the default extension cache directory, which binary builds set to
-  the build machine's home directory;
-* adds `collect_arrow()` and `stream_arrow()`, which return query results as
-  Arrow data;
-* rejects the `timestamp` argument of `load_delta()` and `tbl_delta()`,
-  which the DuckDB `delta` extension silently ignored.
+This is an update from 0.1.1 to 0.1.2. It fixes one bug: quak connections
+now turn off DuckDB's automatic extension installation
+(`autoinstall_known_extensions`) unless the user sets it. DuckDB 2.0 turns it
+on by default, so a query could download the 'azure' or 'delta' extension
+without going through quak's configured extension repository.
 
 ## R CMD check results
 
@@ -18,4 +15,3 @@ This is an update from 0.1.0 to 0.1.1. It:
 * local macOS, R release
 * GitHub Actions: macOS (release), Windows (release), Ubuntu (devel,
   release, oldrel-1)
-* win-builder (devel)
