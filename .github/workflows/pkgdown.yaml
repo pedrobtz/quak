@@ -41,7 +41,12 @@ jobs:
       - name: Deploy to GitHub pages 🚀
         if: github.event_name != 'pull_request'
         uses: JamesIves/github-pages-deploy-action@d92aa235d04922e8f08b40ce78cc5442fcfbfa2f # v4.8.0
+        # force: false makes the deploy rebase instead of force-pushing, so a
+        # coverage badge commit (coverage.yaml writes badges/ on this branch)
+        # landing between the deploy's checkout and its push is not lost.
+        # clean: false keeps badges/, which pkgdown never generates.
         with:
+          force: false
           clean: false
           branch: gh-pages
           folder: docs
