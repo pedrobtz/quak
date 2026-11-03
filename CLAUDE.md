@@ -166,9 +166,13 @@ export.
 
 ## Continuous integration
 
-`.github/workflows/` contains `R-CMD-check` and `pkgdown` from the standard
-`r-lib/actions` workflows, and `coverage`, which calls the shared
-`pedrobtz/r-actions` coverage workflow. `pkgdown` deploys to
+`.github/workflows/` contains `R-CMD-check` and `coverage`, which call the
+shared `pedrobtz/r-actions` workflows, and `pkgdown` from the standard
+`r-lib/actions` workflows. Pull requests run the quick profile; add the
+`full-ci` label for the full set (all runners plus the CRAN-like R-devel
+containers), which always runs after merge. The R-devel containers install
+duckdb as an r-universe binary through `tools/ci-binaries.R` (the
+`pre-install` hook) instead of building it from source. `pkgdown` deploys to
 <https://pedrobtz.github.io/quak/>. The `main` ruleset rejects direct pushes,
 so the coverage badge is committed to `badges/coverage.svg` on `gh-pages`. The
 pkgdown deploy must keep `force: false` and `clean: false` (or exclude
