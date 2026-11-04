@@ -2,6 +2,8 @@
 
 ## quak 0.1.2
 
+CRAN release: 2026-11-03
+
 ### Bug fixes
 
 - quak connections now turn DuckDB’s automatic extension installation
