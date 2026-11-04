@@ -23,8 +23,8 @@ There is no design or roadmap document. `README.md` is the user-facing tour.
 
 ## Current state
 
-Verified 2026-09-25. Version 0.1.0 has been submitted to CRAN
-(`CRAN-SUBMISSION`, `cran-comments.md`). `main` is `0.1.0.9000`.
+Verified 2026-11-04. Version 0.1.2 is on CRAN (published 2026-11-03, tag and
+release `0.1.2`). `main` is `0.1.2.9000`.
 
 No bugs are open. Four were fixed in #6. One of those fixes is deliberately a
 refusal rather than a feature: `load_delta()` and `tbl_delta()` reject
@@ -34,7 +34,7 @@ ignores it, so only `version` time travel works.
 ## Stage tracking
 
 Work toward the next version is tracked as GitHub sub-issues under one parent
-issue per version. The current parent issue is #10 (`v0.1.1`). Tracking issues
+issue per version. The current parent issue is #29 (`v0.1.3`). Tracking issues
 carry the `stage` label. Close a stage by putting `Closes #<n>` in the body of
 the pull request that completes it.
 
@@ -163,6 +163,16 @@ export.
   `# Requires a live Azure account, credentials, and network access.`
 - Use `lower_snake_case`. `.lintr` allows lines up to 120 characters.
   Wrap roxygen text at 80.
+
+## Releases
+
+`CRAN-SUBMISSION` is committed, not ignored (it stays in `.Rbuildignore`).
+After `devtools::submit_cran()`, commit it to `main`: `cran-release.yaml`
+(r-actions `cran-release.yml`) then tags the recorded SHA with the bare
+version, creates the `quak <version>` release from `NEWS.md`, and opens a
+`Post-release` pull request bumping to `<version>.9000`. Merge that once CRAN
+accepts. The daily `CRAN stage` workflow in `pedrobtz/packages` then opens
+the next `v<version>` issue and moves the board card to it.
 
 ## Continuous integration
 
