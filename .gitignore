@@ -15,7 +15,6 @@
 Rplots.pdf
 Meta/
 doc/
-CRAN-SUBMISSION
 
 # Compiled package artifacts
 src/*.o
