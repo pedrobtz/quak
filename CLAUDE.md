@@ -91,8 +91,9 @@ The code is organised in layers. Each layer calls only the layers below it:
 Many functions default to `conn = conn_default()`, which is
 `duckdb::default_conn()`. Among the Azure helpers, only `az_conn()` installs
 extensions. The data, table and lake functions call `ensure_azure_exts()`,
-which loads with `auto_install = FALSE`. A connection that skipped `az_conn()` therefore fails
-fast with `quak_error_extension_not_loaded` instead of downloading anything.
+which loads with `auto_install = FALSE`. A connection that skipped
+`az_conn()` therefore fails fast with `quak_error_extension_not_loaded`
+instead of downloading anything.
 
 `.onAttach` ([R/zzz.R](R/zzz.R)) sends HTTP HEAD requests to both extension
 repositories in interactive sessions and reports through
