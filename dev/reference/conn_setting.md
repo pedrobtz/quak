@@ -37,7 +37,7 @@ Single setting read: a character scalar. Write: `conn` invisibly.
 ``` r
 conn <- DBI::dbConnect(duckdb::duckdb())
 #> duckdb keeps downloaded extensions and secrets in a temporary directory:
-#> ℹ /tmp/RtmpQA9foN/duckdb
+#> ℹ /tmp/Rtmp7JPRvR/duckdb
 #> This is removed when the R session ends.
 #> • Extensions are re-downloaded each session.
 #> • Secrets are lost.

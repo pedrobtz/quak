@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">quak</a>
 
-    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">0.1.1.9000</small>
+    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">0.1.2.9000</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -39,8 +39,11 @@
 
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="development version" id="quak-development-version">quak (development version)<a class="anchor" aria-label="anchor" href="#quak-development-version"></a></h2>
+</div>
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="0.1.2" id="quak-012">quak 0.1.2<a class="anchor" aria-label="anchor" href="#quak-012"></a></h2><p class="text-muted">CRAN release: 2026-11-03</p>
 <div class="section level3">
-<h3 id="bug-fixes-development-version">Bug fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-development-version"></a></h3>
+<h3 id="bug-fixes-0-1-2">Bug fixes<a class="anchor" aria-label="anchor" href="#bug-fixes-0-1-2"></a></h3>
 <ul><li>quak connections now turn DuckDB’s automatic extension installation (<code>autoinstall_known_extensions</code>) off unless <code>config</code> sets it. DuckDB 2.0 turns it on by default, and duckdb 2.0.0 keeps that default, so a query that needed the <code>azure</code> or <code>delta</code> extension downloaded it without going through <code><a href="../reference/ext_install.html">ext_install()</a></code> or its configured repository. A connection that has not loaded the extensions fails fast again (<a href="https://github.com/pedrobtz/quak/issues/21" class="external-link">#21</a>).</li>
 </ul></div>
 </div>

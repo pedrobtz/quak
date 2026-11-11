@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="index.html">quak</a>
 
-    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">0.1.1.9000</small>
+    <small class="nav-text text-danger me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="In-development version">0.1.2.9000</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -42,6 +42,11 @@
 <!-- markdownlint-disable-next-line MD013 -->
 <p>This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.</p>
 <div class="section level2">
+<h2 id="shared-conventions">Shared conventions<a class="anchor" aria-label="anchor" href="#shared-conventions"></a></h2>
+<p>The portfolio’s shared rules are synced into <code>.claude/shared/</code> from <code>pedrobtz/packages:claude/shared/</code>. Never edit them here. Where this file and a shared file disagree, this file wins for this package.</p>
+<p>@.claude/shared/workflow.md @.claude/shared/r-package.md @.claude/shared/ci.md @.claude/shared/correctness.md @.claude/shared/assurance.md</p>
+</div>
+<div class="section level2">
 <h2 id="what-this-is">What this is<a class="anchor" aria-label="anchor" href="#what-this-is"></a></h2>
 <p>quak is an R package that runs DuckDB directly over Azure Data Lake Storage Gen2 (<code>abfss://</code>). It opens DuckDB connections with the <code>azure</code> and <code>delta</code> extensions loaded and registers Azure credentials as DuckDB secrets. It exposes the lake as SQL relations (<code>load_*()</code>), as lazy dbplyr tables (<code>tbl_*()</code>), and as write targets (<code><a href="reference/az_copy_to.html">az_copy_to()</a></code>, <code><a href="reference/az_write_parquet.html">az_write_parquet()</a></code>). It also manages DuckDB extensions for machines that cannot reach the default extension repositories.</p>
 <p>quak does not obtain Azure tokens. Credentials come from DuckDB’s own credential chain, a service principal, or a token that the caller gets elsewhere, for example from <code>azr</code> (Suggests only). <code>dplyr</code>, <code>dbplyr</code> and <code>nanoarrow</code> are also Suggests. Guard every use with <code><a href="https://rlang.r-lib.org/reference/is_installed.html" class="external-link">rlang::check_installed()</a></code>.</p>
@@ -49,25 +54,20 @@
 </div>
 <div class="section level2">
 <h2 id="current-state">Current state<a class="anchor" aria-label="anchor" href="#current-state"></a></h2>
-<p>Verified 2026-09-25. Version 0.1.0 has been submitted to CRAN (<code>CRAN-SUBMISSION</code>, <code>cran-comments.md</code>). <code>main</code> is <code>0.1.0.9000</code>.</p>
+<p>Verified 2026-11-04. Version 0.1.2 is on CRAN (published 2026-11-03, tag and release <code>0.1.2</code>). <code>main</code> is <code>0.1.2.9000</code>.</p>
 <p>No bugs are open. Four were fixed in #6. One of those fixes is deliberately a refusal rather than a feature: <code><a href="reference/load_delta.html">load_delta()</a></code> and <code><a href="reference/tbl_delta.html">tbl_delta()</a></code> reject <code>timestamp</code>. DuckDB’s <code>delta</code> extension accepts a timestamp and silently ignores it, so only <code>version</code> time travel works.</p>
 </div>
 <div class="section level2">
-<h2 id="stage-tracking">Stage tracking<a class="anchor" aria-label="anchor" href="#stage-tracking"></a></h2>
-<p>Work toward the next version is tracked as GitHub sub-issues under one parent issue per version. The current parent issue is #10 (<code>v0.1.1</code>). Tracking issues carry the <code>stage</code> label. Close a stage by putting <code>Closes #&lt;n&gt;</code> in the body of the pull request that completes it.</p>
+<h2 id="versions-and-dependents">Versions and dependents<a class="anchor" aria-label="anchor" href="#versions-and-dependents"></a></h2>
+<p>The current version’s parent issue is #29 (<code>v0.1.3</code>). Sibling packages that depend on this one: none.</p>
 </div>
 <div class="section level2">
 <h2 id="commands">Commands<a class="anchor" aria-label="anchor" href="#commands"></a></h2>
-<p>Run from the package root.</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="ex">Rscript</span> <span class="at">-e</span> <span class="st">'devtools::load_all()'</span></span>
-<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a><span class="ex">Rscript</span> <span class="at">-e</span> <span class="st">'devtools::document()'</span>                <span class="co"># roxygen -&gt; NAMESPACE, man/</span></span>
-<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a><span class="ex">Rscript</span> <span class="at">-e</span> <span class="st">'devtools::test()'</span></span>
-<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a><span class="ex">Rscript</span> <span class="at">-e</span> <span class="st">'devtools::test(filter = "tables")'</span>   <span class="co"># one file: test-tables.R</span></span>
-<span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a><span class="ex">Rscript</span> <span class="at">-e</span> <span class="st">'devtools::test(shuffle = TRUE)'</span></span>
-<span id="cb1-6"><a href="#cb1-6" tabindex="-1"></a><span class="ex">Rscript</span> <span class="at">-e</span> <span class="st">'devtools::check()'</span></span>
-<span id="cb1-7"><a href="#cb1-7" tabindex="-1"></a><span class="ex">Rscript</span> <span class="at">-e</span> <span class="st">'lintr::lint_package()'</span>               <span class="co"># config in .lintr</span></span>
-<span id="cb1-8"><a href="#cb1-8" tabindex="-1"></a><span class="ex">air</span> format .                                     <span class="co"># config in air.toml</span></span>
-<span id="cb1-9"><a href="#cb1-9" tabindex="-1"></a><span class="ex">Rscript</span> <span class="at">-e</span> <span class="st">'covr::package_coverage()'</span>            <span class="co"># CI publishes the badge</span></span></code></pre></div>
+<p>Beyond the shared commands, run from the package root:</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode sh"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="ex">Rscript</span> <span class="at">-e</span> <span class="st">'devtools::test(filter = "tables")'</span>   <span class="co"># one file: test-tables.R</span></span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a><span class="ex">Rscript</span> <span class="at">-e</span> <span class="st">'lintr::lint_package()'</span>               <span class="co"># config in .lintr</span></span>
+<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a><span class="ex">Rscript</span> <span class="at">-e</span> <span class="st">'covr::package_coverage()'</span>            <span class="co"># CI publishes the badge</span></span></code></pre></div>
+<p><code>air format .</code> reads its configuration from <code>air.toml</code>.</p>
 </div>
 <div class="section level2">
 <h2 id="architecture">Architecture<a class="anchor" aria-label="anchor" href="#architecture"></a></h2>
@@ -105,31 +105,29 @@
 <strong>Exported topics must be listed in <a href="_pkgdown.yml">_pkgdown.yml</a>.</strong> The pkgdown build fails otherwise. Internal functions use <code>@keywords internal</code> and stay out of the index.</li>
 </ul></div>
 <div class="section level2">
-<h2 id="testing-conventions">Testing conventions<a class="anchor" aria-label="anchor" href="#testing-conventions"></a></h2>
+<h2 id="testing">Testing<a class="anchor" aria-label="anchor" href="#testing"></a></h2>
 <ul><li>Helpers are in <code>tests/testthat/helper-*.R</code>. <code>local_ext_conn()</code> opens a fresh connection whose extension directory is a temporary directory, and closes it on exit. <code>local_opt()</code> sets an <code>opts</code> entry and restores it on exit. Use them rather than the default connection or the user’s extension directory.</li>
-<li>Assert on the condition class: <code>expect_error(..., class = "quak_error_&lt;kind&gt;")</code>.</li>
+<li>Condition classes are <code>quak_error_&lt;kind&gt;</code>: <code>expect_error(..., class = "quak_error_&lt;kind&gt;")</code>.</li>
 <li>No test uses Azure credentials. Tests that download extensions use <code>skip_on_cran()</code> and <code>skip_if_offline()</code>. Tests that need the <code>azure</code> or <code>delta</code> extension also use <code>skip_on_os("windows")</code>, because those extensions are not published for <code>windows_amd64_mingw</code>.</li>
 <li>Mock internal functions with <code>local_mocked_bindings()</code>.</li>
 </ul></div>
 <div class="section level2">
-<h2 id="definition-of-done">Definition of done<a class="anchor" aria-label="anchor" href="#definition-of-done"></a></h2>
-<p><code>devtools::document()</code> leaves no diff. <code>devtools::check()</code> reports 0 errors, 0 warnings and 0 notes. <code>devtools::test(shuffle = TRUE)</code> passes. Every leg of the R-CMD-check workflow is green: macOS, Windows, and Ubuntu on devel, release and oldrel-1. A user-facing change also needs a test, roxygen documentation, a <code>NEWS.md</code> entry, and an entry in <code>_pkgdown.yml</code> for any new export.</p>
-</div>
-<div class="section level2">
 <h2 id="editing-rules">Editing rules<a class="anchor" aria-label="anchor" href="#editing-rules"></a></h2>
-<ul><li>Roxygen comments are the source. Never edit <code>man/</code> or <code>NAMESPACE</code> by hand. <code>README.md</code> is edited directly because there is no <code>README.Rmd</code>.</li>
+<ul><li>
+<strong>Deviation:</strong> there is no <code>README.Rmd</code>, so <code>README.md</code> is edited directly.</li>
 <li>Long-form docs are pkgdown articles in <code>vignettes/articles/</code>, not vignettes. <code>.Rbuildignore</code> excludes <code>vignettes/</code>, so they never reach CRAN, and their dependencies go in <code>Config/Needs/website</code>, not Suggests. Their code chunks use <code>eval = FALSE</code> because they need Azure.</li>
 <li>Examples that reach Azure go in <code>\dontrun{}</code> with the comment <code># Requires a live Azure account, credentials, and network access.</code>
 </li>
-<li>Use <code>lower_snake_case</code>. <code>.lintr</code> allows lines up to 120 characters. Wrap roxygen text at 80.</li>
+<li>
+<code>.lintr</code> allows lines up to 120 characters.</li>
 </ul></div>
 <div class="section level2">
-<h2 id="continuous-integration">Continuous integration<a class="anchor" aria-label="anchor" href="#continuous-integration"></a></h2>
-<p><code>.github/workflows/</code> contains the standard <code>r-lib/actions</code> workflows: <code>R-CMD-check</code>, <code>coverage</code>, which commits the badge to <code>.github/badges/</code>, and <code>pkgdown</code>, which deploys to <a href="https://pedrobtz.github.io/quak/" class="uri">https://pedrobtz.github.io/quak/</a>.</p>
+<h2 id="releases">Releases<a class="anchor" aria-label="anchor" href="#releases"></a></h2>
+<p>The release flow is the shared one in <code>.claude/shared/workflow.md</code>. Here the GitHub release is named <code>quak &lt;version&gt;</code> and the bump pull request is titled <code>Post-release</code>. Once CRAN publishes, the daily <code>CRAN stage</code> workflow in <code>pedrobtz/packages</code> opens the next <code>v&lt;version&gt;</code> issue and moves the board card to it.</p>
 </div>
 <div class="section level2">
-<h2 id="commits-and-pull-requests">Commits and pull requests<a class="anchor" aria-label="anchor" href="#commits-and-pull-requests"></a></h2>
-<p>Write short, imperative, sentence-case commit subjects. Never commit or push to <code>main</code>. Work on a branch, open a pull request, and do not merge it unless told to. When you find a defect, open an issue for it rather than only working around it.</p>
+<h2 id="continuous-integration">Continuous integration<a class="anchor" aria-label="anchor" href="#continuous-integration"></a></h2>
+<p><code>.github/workflows/</code> contains <code>R-CMD-check</code> and <code>coverage</code>, which call the shared <code>pedrobtz/r-actions</code> workflows, <code>cran-release</code> (r-actions <code>cran-release.yml</code>), and <code>pkgdown</code> from the standard <code>r-lib/actions</code> workflows. The R-CMD-check legs are macOS, Windows, and Ubuntu on devel, release and oldrel-1. Pull requests run the quick profile; add the <code>full-ci</code> label for the full set (all runners plus the CRAN-like R-devel containers). <strong>Deviation from <code>ci.md</code>:</strong> the full set always runs after merge, because the caller passes <code>full</code> for every event but an unlabelled pull request. The R-devel containers install duckdb as an r-universe binary through <code>tools/ci-binaries.R</code> (the <code>pre-install</code> hook) instead of building it from source. <code>pkgdown</code> deploys to <a href="https://pedrobtz.github.io/quak/" class="uri">https://pedrobtz.github.io/quak/</a>. The <code>main</code> ruleset rejects direct pushes, so the coverage badge is committed to <code>badges/coverage.svg</code> on <code>gh-pages</code>. The pkgdown deploy must keep <code>force: false</code> and <code>clean: false</code> (or exclude <code>badges</code>), otherwise it overwrites or deletes the badge.</p>
 </div>
 </div>
 
