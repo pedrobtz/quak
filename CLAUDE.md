@@ -3,6 +3,18 @@
 <!-- markdownlint-disable-next-line MD013 -->
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## Shared conventions
+
+The portfolio's shared rules are synced into `.claude/shared/` from
+`pedrobtz/packages:claude/shared/`. Never edit them here. Where this file and
+a shared file disagree, this file wins for this package.
+
+@.claude/shared/workflow.md
+@.claude/shared/r-package.md
+@.claude/shared/ci.md
+@.claude/shared/correctness.md
+@.claude/shared/assurance.md
+
 ## What this is
 
 quak is an R package that runs DuckDB directly over Azure Data Lake Storage
@@ -31,28 +43,22 @@ refusal rather than a feature: `load_delta()` and `tbl_delta()` reject
 `timestamp`. DuckDB's `delta` extension accepts a timestamp and silently
 ignores it, so only `version` time travel works.
 
-## Stage tracking
+## Versions and dependents
 
-Work toward the next version is tracked as GitHub sub-issues under one parent
-issue per version. The current parent issue is #29 (`v0.1.3`). Tracking issues
-carry the `stage` label. Close a stage by putting `Closes #<n>` in the body of
-the pull request that completes it.
+The current version's parent issue is #29 (`v0.1.3`). Sibling packages that
+depend on this one: none.
 
 ## Commands
 
-Run from the package root.
+Beyond the shared commands, run from the package root:
 
 ```sh
-Rscript -e 'devtools::load_all()'
-Rscript -e 'devtools::document()'                # roxygen -> NAMESPACE, man/
-Rscript -e 'devtools::test()'
 Rscript -e 'devtools::test(filter = "tables")'   # one file: test-tables.R
-Rscript -e 'devtools::test(shuffle = TRUE)'
-Rscript -e 'devtools::check()'
 Rscript -e 'lintr::lint_package()'               # config in .lintr
-air format .                                     # config in air.toml
 Rscript -e 'covr::package_coverage()'            # CI publishes the badge
 ```
+
+`air format .` reads its configuration from `air.toml`.
 
 ## Architecture
 
@@ -84,9 +90,10 @@ The code is organised in layers. Each layer calls only the layers below it:
 
 Many functions default to `conn = conn_default()`, which is
 `duckdb::default_conn()`. Among the Azure helpers, only `az_conn()` installs
-extensions. The data, table and lake functions call `ensure_azure_exts()`, which loads with
-`auto_install = FALSE`. A connection that skipped `az_conn()` therefore fails
-fast with `quak_error_extension_not_loaded` instead of downloading anything.
+extensions. The data, table and lake functions call `ensure_azure_exts()`,
+which loads with `auto_install = FALSE`. A connection that skipped
+`az_conn()` therefore fails fast with `quak_error_extension_not_loaded`
+instead of downloading anything.
 
 `.onAttach` ([R/zzz.R](R/zzz.R)) sends HTTP HEAD requests to both extension
 repositories in interactive sessions and reports through
@@ -127,14 +134,14 @@ repositories in interactive sessions and reports through
   pkgdown build fails otherwise. Internal functions use
   `@keywords internal` and stay out of the index.
 
-## Testing conventions
+## Testing
 
 - Helpers are in `tests/testthat/helper-*.R`. `local_ext_conn()` opens a
   fresh connection whose extension directory is a temporary directory, and
   closes it on exit. `local_opt()` sets an `opts` entry and restores it on
   exit. Use them rather than the default connection or the user's extension
   directory.
-- Assert on the condition class:
+- Condition classes are `quak_error_<kind>`:
   `expect_error(..., class = "quak_error_<kind>")`.
 - No test uses Azure credentials. Tests that download extensions use
   `skip_on_cran()` and `skip_if_offline()`. Tests that need the `azure` or
@@ -142,55 +149,40 @@ repositories in interactive sessions and reports through
   extensions are not published for `windows_amd64_mingw`.
 - Mock internal functions with `local_mocked_bindings()`.
 
-## Definition of done
-
-`devtools::document()` leaves no diff. `devtools::check()` reports 0 errors,
-0 warnings and 0 notes. `devtools::test(shuffle = TRUE)` passes. Every leg of
-the R-CMD-check workflow is green: macOS, Windows, and Ubuntu on devel,
-release and oldrel-1. A user-facing change also needs a test, roxygen
-documentation, a `NEWS.md` entry, and an entry in `_pkgdown.yml` for any new
-export.
-
 ## Editing rules
 
-- Roxygen comments are the source. Never edit `man/` or `NAMESPACE` by
-  hand. `README.md` is edited directly because there is no `README.Rmd`.
+- **Deviation:** there is no `README.Rmd`, so `README.md` is edited
+  directly.
 - Long-form docs are pkgdown articles in `vignettes/articles/`, not
   vignettes. `.Rbuildignore` excludes `vignettes/`, so they never reach
   CRAN, and their dependencies go in `Config/Needs/website`, not Suggests.
   Their code chunks use `eval = FALSE` because they need Azure.
 - Examples that reach Azure go in `\dontrun{}` with the comment
   `# Requires a live Azure account, credentials, and network access.`
-- Use `lower_snake_case`. `.lintr` allows lines up to 120 characters.
-  Wrap roxygen text at 80.
+- `.lintr` allows lines up to 120 characters.
 
 ## Releases
 
-`CRAN-SUBMISSION` is committed, not ignored (it stays in `.Rbuildignore`).
-After `devtools::submit_cran()`, commit it to `main`: `cran-release.yaml`
-(r-actions `cran-release.yml`) then tags the recorded SHA with the bare
-version, creates the `quak <version>` release from `NEWS.md`, and opens a
-`Post-release` pull request bumping to `<version>.9000`. Merge that once CRAN
-accepts. The daily `CRAN stage` workflow in `pedrobtz/packages` then opens
-the next `v<version>` issue and moves the board card to it.
+The release flow is the shared one in `.claude/shared/workflow.md`. Here the
+GitHub release is named `quak <version>` and the bump pull request is titled
+`Post-release`. Once CRAN publishes, the daily `CRAN stage` workflow in
+`pedrobtz/packages` opens the next `v<version>` issue and moves the board card
+to it.
 
 ## Continuous integration
 
 `.github/workflows/` contains `R-CMD-check` and `coverage`, which call the
-shared `pedrobtz/r-actions` workflows, and `pkgdown` from the standard
-`r-lib/actions` workflows. Pull requests run the quick profile; add the
-`full-ci` label for the full set (all runners plus the CRAN-like R-devel
-containers), which always runs after merge. The R-devel containers install
-duckdb as an r-universe binary through `tools/ci-binaries.R` (the
-`pre-install` hook) instead of building it from source. `pkgdown` deploys to
+shared `pedrobtz/r-actions` workflows, `cran-release` (r-actions
+`cran-release.yml`), and `pkgdown` from the standard `r-lib/actions`
+workflows. The R-CMD-check legs are macOS, Windows, and Ubuntu on devel,
+release and oldrel-1. Pull requests run the quick profile; add the `full-ci`
+label for the full set (all runners plus the CRAN-like R-devel containers).
+**Deviation from `ci.md`:** the full set always runs after merge, because
+the caller passes `full` for every event but an unlabelled pull request.
+The R-devel containers install duckdb as an r-universe binary through
+`tools/ci-binaries.R` (the `pre-install` hook) instead of building it from
+source. `pkgdown` deploys to
 <https://pedrobtz.github.io/quak/>. The `main` ruleset rejects direct pushes,
 so the coverage badge is committed to `badges/coverage.svg` on `gh-pages`. The
 pkgdown deploy must keep `force: false` and `clean: false` (or exclude
 `badges`), otherwise it overwrites or deletes the badge.
-
-## Commits and pull requests
-
-Write short, imperative, sentence-case commit subjects. Never commit or push
-to `main`. Work on a branch, open a pull request, and do not merge it unless
-told to. When you find a defect, open an issue for it rather than only
-working around it.
