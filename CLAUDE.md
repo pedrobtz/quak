@@ -5,15 +5,14 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Shared conventions
 
-The portfolio's shared rules are synced into `.claude/shared/` from
-`pedrobtz/packages:claude/shared/`. Never edit them here. Where this file and
-a shared file disagree, this file wins for this package.
+<!-- r-skills: shared-rules -->
 
-@.claude/shared/workflow.md
-@.claude/shared/r-package.md
-@.claude/shared/ci.md
-@.claude/shared/correctness.md
-@.claude/shared/assurance.md
+The portfolio's shared rules (`workflow`, `r-package`, `ci`, `native-code`,
+`correctness`, `assurance`) come from the
+[r-skills](https://github.com/pedrobtz/r-skills) plugin's `rules/`, loaded at
+session start because of the marker above. Never copy them here. Where this
+file and a shared rule disagree, this file wins for this package. Cloud
+sessions do not load the plugin and run without them.
 
 ## What this is
 
@@ -163,7 +162,7 @@ repositories in interactive sessions and reports through
 
 ## Releases
 
-The release flow is the shared one in `.claude/shared/workflow.md`. Here the
+The release flow is the shared one in the shared `workflow.md` rules. Here the
 GitHub release is named `quak <version>` and the bump pull request is titled
 `Post-release`. Once CRAN publishes, the daily `CRAN stage` workflow in
 `pedrobtz/packages` opens the next `v<version>` issue and moves the board card
